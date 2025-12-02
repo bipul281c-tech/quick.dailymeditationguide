@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/hero-section"
 import { Footer } from "@/components/footer"
 import { AmbientBackground } from "@/components/ambient-background"
 import { MeditationPlayer } from "@/components/meditation-player"
+import { ExtensionPromo } from "@/components/extension-promo"
 import meditations from "@/content/meditations.json"
 
 export default function Home() {
@@ -15,6 +16,9 @@ export default function Home() {
         <HeroSection />
         <MeditationPlayer meditations={meditations} />
       </main>
+
+      {/* Extension Promotion Section */}
+      <ExtensionPromo />
 
       <Footer />
     </div>

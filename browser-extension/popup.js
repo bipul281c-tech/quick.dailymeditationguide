@@ -2,8 +2,7 @@
 // API Integration and UI Controller
 
 // Default API configuration
-const DEFAULT_API_BASE_URL = 'http://localhost:3000';
-let API_BASE_URL = DEFAULT_API_BASE_URL;
+const API_BASE_URL = 'http://localhost:3000';
 
 // State
 let meditations = [];
@@ -24,10 +23,6 @@ const elements = {
   playPauseBtn: null,
   progressBar: null,
   audioElement: null,
-  settingsPanel: null,
-  toggleSettings: null,
-  apiBaseUrl: null,
-  saveSettings: null,
   playIconSVG: null,
   pauseIconSVG: null,
   progressKnob: null,
@@ -38,7 +33,6 @@ const elements = {
 // Initialize the extension
 document.addEventListener('DOMContentLoaded', async () => {
   initializeElements();
-  await loadSettings();
   setupEventListeners();
   await fetchMeditations();
 });
@@ -57,10 +51,6 @@ function initializeElements() {
   elements.playPauseBtn = document.getElementById('play-pause-btn');
   elements.progressBar = document.getElementById('progress-bar');
   elements.audioElement = document.getElementById('audio-element');
-  elements.settingsPanel = document.getElementById('settings-panel');
-  elements.toggleSettings = document.getElementById('toggle-settings');
-  elements.apiBaseUrl = document.getElementById('api-base-url');
-  elements.saveSettings = document.getElementById('save-settings');
   elements.playIconSVG = document.getElementById('playIconSVG');
   elements.pauseIconSVG = document.getElementById('pauseIconSVG');
   elements.progressKnob = document.getElementById('progressKnob');
@@ -68,36 +58,6 @@ function initializeElements() {
   elements.totalTimeEl = document.getElementById('totalTime');
 }
 
-// Load settings from Chrome storage
-async function loadSettings() {
-  try {
-    const result = await chrome.storage.sync.get(['apiBaseUrl']);
-    if (result.apiBaseUrl) {
-      API_BASE_URL = result.apiBaseUrl;
-      elements.apiBaseUrl.value = API_BASE_URL;
-    } else {
-      elements.apiBaseUrl.value = DEFAULT_API_BASE_URL;
-    }
-  } catch (error) {
-    console.error('Failed to load settings:', error);
-    elements.apiBaseUrl.value = DEFAULT_API_BASE_URL;
-  }
-}
-
-// Save settings to Chrome storage
-async function saveSettings() {
-  const newUrl = elements.apiBaseUrl.value.trim();
-  if (newUrl) {
-    API_BASE_URL = newUrl;
-    try {
-      await chrome.storage.sync.set({ apiBaseUrl: newUrl });
-      elements.settingsPanel.classList.add('hidden');
-      await fetchMeditations();
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-    }
-  }
-}
 
 // Setup event listeners
 function setupEventListeners() {
@@ -110,11 +70,6 @@ function setupEventListeners() {
   // Retry
   elements.retryBtn.addEventListener('click', () => fetchMeditations());
 
-  // Settings
-  elements.toggleSettings.addEventListener('click', () => {
-    elements.settingsPanel.classList.toggle('hidden');
-  });
-  elements.saveSettings.addEventListener('click', saveSettings);
 
   // Audio Player
   elements.playPauseBtn.addEventListener('click', togglePlayPause);
@@ -133,12 +88,12 @@ async function fetchMeditations(query = '') {
   hideError();
 
   try {
-    const url = query 
+    const url = query
       ? `${API_BASE_URL}/api/meditations?q=${encodeURIComponent(query)}`
       : `${API_BASE_URL}/api/meditations`;
-    
+
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
