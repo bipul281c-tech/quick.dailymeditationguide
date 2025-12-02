@@ -152,6 +152,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    scrollbar-gutter: stable;
+  }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -212,12 +217,15 @@ input[type="range"].audio-slider::-moz-range-track {
   0% {
     transform: translate(0px, 0px) scale(1);
   }
+
   33% {
     transform: translate(30px, -50px) scale(1.1);
   }
+
   66% {
     transform: translate(-20px, 20px) scale(0.9);
   }
+
   100% {
     transform: translate(0px, 0px) scale(1);
   }
@@ -236,11 +244,13 @@ input[type="range"].audio-slider::-moz-range-track {
 }
 
 @keyframes breathe {
+
   0%,
   100% {
     transform: scale(1);
     opacity: 0.8;
   }
+
   50% {
     transform: scale(1.05);
     opacity: 0.4;
@@ -257,6 +267,7 @@ input[type="range"].audio-slider::-moz-range-track {
     filter: blur(10px);
     transform: translateY(10px);
   }
+
   100% {
     opacity: 1;
     filter: blur(0);
@@ -273,9 +284,11 @@ input[type="range"].audio-slider::-moz-range-track {
 .delay-100 {
   animation-delay: 0.1s;
 }
+
 .delay-200 {
   animation-delay: 0.2s;
 }
+
 .delay-300 {
   animation-delay: 0.3s;
 }

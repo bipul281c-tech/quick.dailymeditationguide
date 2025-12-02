@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/contexts/auth-context"
+import { useToast } from "@/hooks/use-toast"
 import { Loader2, Mail, Lock, User, CheckCircle2 } from "lucide-react"
 
 interface AuthModalProps {
@@ -24,6 +25,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [signupComplete, setSignupComplete] = useState(false)
   const { signIn, signUp } = useAuth()
+  const { toast } = useToast()
 
   // Reset mode when defaultMode changes or modal opens
   useEffect(() => {
@@ -46,6 +48,10 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
         if (error) {
           setErrorMessage(error.message)
         } else {
+          toast({
+            title: "Signed in successfully",
+            description: "Welcome back to your meditation journey.",
+          })
           onClose()
           resetForm()
         }
@@ -54,6 +60,10 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
         if (error) {
           setErrorMessage(error.message)
         } else {
+          toast({
+            title: "Account created",
+            description: "Please check your email to confirm your account.",
+          })
           setSuccessMessage("Check your email for the confirmation link!")
           setSignupComplete(true)
         }
@@ -134,82 +144,82 @@ export function AuthModal({ isOpen, onClose, defaultMode = "signin" }: AuthModal
 
             <form onSubmit={handleSubmit} className="space-y-4 pt-4">
               {mode === "signup" && (
-            <div className="space-y-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="displayName"
-                  type="text"
-                  placeholder="Your name"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="pl-10"
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="displayName">Display Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="displayName"
+                      type="text"
+                      placeholder="Your name"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="pl-10"
+                  />
+                </div>
               </div>
-            </div>
-          )}
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="pl-10"
-              />
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="pl-10"
-              />
-            </div>
-          </div>
+              {errorMessage && (
+                <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
+                  {errorMessage}
+                </div>
+              )}
 
-          {errorMessage && (
-            <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-              {errorMessage}
-            </div>
-          )}
+              {successMessage && (
+                <div className="text-sm text-green-600 bg-green-50 dark:bg-green-900/20 p-3 rounded-md">
+                  {successMessage}
+                </div>
+              )}
 
-          {successMessage && (
-            <div className="text-sm text-green-600 bg-green-50 dark:bg-green-900/20 p-3 rounded-md">
-              {successMessage}
-            </div>
-          )}
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {mode === "signin" ? "Sign In" : "Create Account"}
+              </Button>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {mode === "signin" ? "Sign In" : "Create Account"}
-          </Button>
-
-          <div className="text-center text-sm text-muted-foreground">
-            {mode === "signin" ? "Don't have an account? " : "Already have an account? "}
-            <button
-              type="button"
-              onClick={switchMode}
-              className="text-primary hover:underline font-medium"
-            >
-              {mode === "signin" ? "Sign up" : "Sign in"}
-            </button>
-          </div>
+              <div className="text-center text-sm text-muted-foreground">
+                {mode === "signin" ? "Don't have an account? " : "Already have an account? "}
+                <button
+                  type="button"
+                  onClick={switchMode}
+                  className="text-primary hover:underline font-medium"
+                >
+                  {mode === "signin" ? "Sign up" : "Sign in"}
+                </button>
+              </div>
             </form>
           </>
         )}

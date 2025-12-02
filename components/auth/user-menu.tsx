@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
 import { AuthModal } from "./auth-modal"
 import { Button } from "@/components/ui/button"
@@ -14,31 +15,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User, LogOut, Heart, History, Settings } from "lucide-react"
-import { Skeleton } from "@/components/ui/skeleton"
-
-// Skeleton loader for auth buttons - matches signed-out state dimensions
-function AuthButtonsSkeleton() {
-  return (
-    <div className="flex items-center gap-2">
-      {/* Sign in button skeleton */}
-      <Skeleton className="hidden md:block h-9 w-[70px] rounded-full" />
-      {/* Sign up button skeleton */}
-      <Skeleton className="hidden md:block h-9 w-[76px] rounded-full" />
-      {/* Mobile icon skeleton */}
-      <Skeleton className="md:hidden h-5 w-5 rounded-full" />
-    </div>
-  )
-}
-
-// Skeleton for avatar - matches signed-in state dimensions
-function AvatarSkeleton() {
-  return (
-    <Skeleton className="h-9 w-9 rounded-full" />
-  )
-}
 
 export function UserMenu() {
-  const { user, profile, loading, initializing, signOut } = useAuth()
+  const { user, profile, loading, signOut } = useAuth()
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin")
 
@@ -54,20 +33,6 @@ export function UserMenu() {
 
   const handleSignOut = async () => {
     await signOut()
-  }
-
-  // Show skeleton during initial load - prevents layout shift
-  if (initializing) {
-    // Check localStorage hint to show appropriate skeleton
-    const hasSessionHint = typeof window !== "undefined" &&
-      localStorage.getItem("supabase_session_hint") === "true"
-
-    return hasSessionHint ? <AvatarSkeleton /> : <AuthButtonsSkeleton />
-  }
-
-  // Show loading spinner only during active sign-in/out operations
-  if (loading) {
-    return user ? <AvatarSkeleton /> : <AuthButtonsSkeleton />
   }
 
   if (!user) {
@@ -106,7 +71,7 @@ export function UserMenu() {
   const initials = displayName.slice(0, 2).toUpperCase()
 
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
@@ -125,9 +90,11 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          <Heart className="mr-2 h-4 w-4" />
-          <span>Favorites</span>
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/favorites">
+            <Heart className="mr-2 h-4 w-4" />
+            <span>Favorites</span>
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer">
           <History className="mr-2 h-4 w-4" />
@@ -138,9 +105,13 @@ export function UserMenu() {
           <span>Preferences</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+        <DropdownMenuItem
+          onClick={handleSignOut}
+          disabled={loading}
+          className="cursor-pointer text-destructive"
+        >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Sign out</span>
+          <span>{loading ? "Signing out..." : "Sign out"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
