@@ -7,7 +7,7 @@ import meditations from "@/content/meditations.json"
 
 export default function Home() {
   return (
-    <div className="bg-background text-foreground antialiased selection:bg-stone-200 selection:text-stone-800 overflow-x-hidden relative min-h-screen">
+    <div className="bg-background text-foreground antialiased selection:bg-celadon-light selection:text-primary-foreground overflow-x-hidden relative min-h-screen">
       <AmbientBackground />
       <Navigation />
 
