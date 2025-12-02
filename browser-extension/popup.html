@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindful Extension</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+    <div class="ext-container">
+
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+
+        <header class="header">
+            <div class="flex items-center gap-2.5">
+                <div class="icon-box">
+                    <span>M</span>
+                </div>
+                <span class="brand-text">Mindful</span>
+            </div>
+            <button id="toggle-settings" class="btn-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+        </header>
+
+        <!-- Settings Panel (Collapsible) -->
+        <div id="settings-panel" class="settings-panel hidden">
+            <label for="api-base-url">API Base URL:</label>
+            <input type="text" id="api-base-url" placeholder="http://localhost:3000">
+            <button id="save-settings" class="btn btn-small">Save</button>
+        </div>
+
+        <main>
+
+            <div class="mt-2 mb-6">
+                <p class="subtext">Good afternoon</p>
+                <h1>Time to breathe?</h1>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search meditations..." autocomplete="off">
+                <button id="search-btn" class="btn btn-primary">Search</button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Loading meditations...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="error hidden">
+                <p id="error-message">Failed to load meditations</p>
+                <button id="retry-btn" class="btn">Retry</button>
+            </div>
+
+            <div class="glass-card">
+                <div class="inner-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex gap-3">
+                            <div class="track-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path></svg>
+                            </div>
+                            <div>
+                                <h3 id="player-title" style="font-size: 0.875rem; font-weight: 600; color: var(--stone-800); margin: 0; letter-spacing: -0.01em;">Daily Calm</h3>
+                                <p id="player-time" style="font-size: 0.75rem; color: var(--stone-400); font-weight: 500; margin: 0;">Visualization • 10 min</p>
+                            </div>
+                        </div>
+                        <button style="background: none; border: none; cursor: pointer; color: var(--stone-300);" onmouseover="this.style.color='var(--rose-400)'" onmouseout="this.style.color='var(--stone-300)'">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                        </button>
+                    </div>
+
+                    <div class="progress-area group">
+                        <div class="time-labels">
+                            <span id="currentTime">0:00</span>
+                            <span id="totalTime">10:00</span>
+                        </div>
+
+                        <div class="track-bg">
+                            <div id="progressBar" class="track-fill"></div>
+                        </div>
+
+                        <div id="progressKnob" class="knob"></div>
+
+                        <input type="range" id="progress-bar" min="0" max="100" value="0">
+                    </div>
+
+                    <div class="flex items-center justify-center gap-6 mt-1">
+                        <button class="btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 19 2 12 11 5 11 19"></polygon><polygon points="22 19 13 12 22 5 22 19"></polygon></svg>
+                        </button>
+
+                        <button id="play-pause-btn" class="play-btn">
+                            <svg id="playIconSVG" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="margin-left: 2px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <svg id="pauseIconSVG" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display: none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                        </button>
+
+                        <button class="btn-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meditation List -->
+            <div id="meditation-list" class="meditation-list"></div>
+
+            <!-- Explore Moods Section -->
+            <div id="explore-moods" class="explore-moods-section mb-6">
+                <div class="flex items-center justify-between mb-3 px-1">
+                    <h2 style="font-size: 0.75rem; font-weight: 600; color: var(--stone-400); text-transform: uppercase; letter-spacing: 0.1em; margin: 0;">Explore Moods</h2>
+                </div>
+
+                <div class="grid-2">
+                    <button class="mood-btn hover-indigo">
+                        <div class="mood-icon bg-indigo-50">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--stone-700);">Sleep</span>
+                            <span style="display: block; font-size: 0.625rem; color: var(--stone-400); font-weight: 500;">Drift off</span>
+                        </div>
+                    </button>
+
+                    <button class="mood-btn hover-amber">
+                        <div class="mood-icon bg-amber-50">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--stone-700);">Focus</span>
+                            <span style="display: block; font-size: 0.625rem; color: var(--stone-400); font-weight: 500;">Deep work</span>
+                        </div>
+                    </button>
+
+                    <button class="mood-btn hover-teal">
+                        <div class="mood-icon bg-teal-50">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"></path><path d="M9.6 4.6A2 2 0 1 1 11 8H2"></path><path d="M12.6 19.4A2 2 0 1 1 14 16H2"></path></svg>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--stone-700);">Calm</span>
+                            <span style="display: block; font-size: 0.625rem; color: var(--stone-400); font-weight: 500;">Breathwork</span>
+                        </div>
+                    </button>
+
+                    <button class="mood-btn hover-emerald">
+                        <div class="mood-icon bg-emerald-50">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m8 14 4-9 4 9"></path><path d="M6 14h4"></path><path d="m4 22 6-10 6 10"></path><path d="M14 22v-3a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v3"></path><path d="M2 22h20"></path></svg>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; font-weight: 600; color: var(--stone-700);">Nature</span>
+                            <span style="display: block; font-size: 0.625rem; color: var(--stone-400); font-weight: 500;">Ambient</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <nav class="nav-bar">
+            <button class="nav-item nav-active">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span style="font-size: 9px; font-weight: 600;">Home</span>
+            </button>
+            <button class="nav-item nav-inactive">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                <span style="font-size: 9px; font-weight: 500;">Explore</span>
+            </button>
+            <button class="nav-item nav-inactive">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span style="font-size: 9px; font-weight: 500;">Profile</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <audio id="audio-element"></audio>
+
+    <script src="popup.js"></script>
+</body>
+</html>
+
