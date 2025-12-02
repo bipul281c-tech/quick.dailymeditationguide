@@ -1,6 +1,6 @@
 {
-  "name": "Breathe - Guided Meditation",
-  "short_name": "Breathe",
+  "name": "Daily Meditation Guide - Guided Meditation",
+  "short_name": "Daily Meditation Guide",
   "description": "Immersive audio landscapes designed to help you focus, breathe, and restore balance to your day.",
   "start_url": "/",
   "display": "standalone",
@@ -24,4 +24,3 @@
     }
   ]
 }
-

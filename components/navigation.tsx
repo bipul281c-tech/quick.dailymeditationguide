@@ -11,12 +11,12 @@ export function Navigation() {
         <a href="#" className="flex items-center gap-3 group">
           <Image
             src="/logo.svg"
-            alt="Breathe Logo"
+            alt="Daily Meditation Guide Logo"
             width={44}
             height={44}
             className="group-hover:scale-105 transition-transform duration-300"
           />
-          <span className="text-base font-semibold tracking-tighter text-foreground">BREATHE</span>
+          <span className="text-base font-semibold tracking-tighter text-foreground">DAILY MEDITATION GUIDE</span>
         </a>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">

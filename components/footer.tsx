@@ -8,11 +8,11 @@ export function Footer() {
         <div className="flex items-center gap-3">
           <Image
             src="/logo.svg"
-            alt="Breathe Logo"
+            alt="Daily Meditation Guide Logo"
             width={36}
             height={36}
           />
-          <span className="text-sm font-semibold tracking-tighter text-foreground">BREATHE © 2025</span>
+          <span className="text-sm font-semibold tracking-tighter text-foreground">DAILY MEDITATION GUIDE © 2025</span>
         </div>
 
         <div className="flex gap-6 text-xs text-muted-foreground font-medium">

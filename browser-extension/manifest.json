@@ -1,16 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "dailymeditationguide",
+  "name": "Daily Meditation Guide",
   "version": "1.1.0",
   "description": "Take mindful breaks with guided meditations, breathing exercises, and ambient sounds from your toolbar.",
   "permissions": [
     "storage",
     "alarms",
-    "notifications"
+    "notifications",
+    "cookies"
   ],
   "host_permissions": [
     "http://localhost:3000/*",
-    "https://*.vercel.app/*"
+    "https://*.vercel.app/*",
+    "https://www.quick.dailymeditationguide.com/*",
+    "https://oilicrcgqihpcajjjwfp.supabase.co/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -33,4 +36,3 @@
     "type": "module"
   }
 }
-

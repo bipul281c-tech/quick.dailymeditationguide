@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initializeElements();
   setupEventListeners();
   updateGreeting();
+  await initializeAuth(); // Initialize Supabase Auth (now async)
   await fetchMeditations();
 });
 
@@ -103,6 +104,18 @@ function initializeElements() {
   // Mini player
   elements.miniPlayer = document.getElementById('mini-player');
   elements.closePlayerBtn = document.getElementById('close-player-btn');
+
+  // Auth elements
+  elements.profileBtn = document.getElementById('profile-btn');
+  elements.profileModal = document.getElementById('profile-modal');
+  elements.closeProfileBtn = document.getElementById('close-profile');
+  elements.loginForm = document.getElementById('login-form');
+  elements.signOutBtn = document.getElementById('sign-out-btn');
+  elements.authLoading = document.getElementById('auth-loading');
+  elements.authLoggedOut = document.getElementById('auth-logged-out');
+  elements.authLoggedIn = document.getElementById('auth-logged-in');
+  elements.userEmail = document.getElementById('user-email');
+  elements.authError = document.getElementById('auth-error');
 }
 
 // Update greeting based on time of day
@@ -253,6 +266,20 @@ function setupEventListeners() {
       updateNavActive('nav-home');
     });
   }
+
+  // Profile events
+  if (elements.profileBtn) {
+    elements.profileBtn.addEventListener('click', openProfileModal);
+  }
+  if (elements.closeProfileBtn) {
+    elements.closeProfileBtn.addEventListener('click', closeProfileModal);
+  }
+  if (elements.loginForm) {
+    elements.loginForm.addEventListener('submit', handleLogin);
+  }
+  if (elements.signOutBtn) {
+    elements.signOutBtn.addEventListener('click', handleLogout);
+  }
 }
 
 // Update active navigation state
@@ -279,7 +306,15 @@ async function fetchMeditations(query = '') {
       ? `${API_BASE_URL}/api/meditations?q=${encodeURIComponent(query)}`
       : `${API_BASE_URL}/api/meditations`;
 
-    const response = await fetch(url);
+    const headers = {};
+    if (supabaseClient) {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+    }
+
+    const response = await fetch(url, { headers });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -815,6 +850,199 @@ function toggleAmbientSound(sound, button) {
       console.error('Failed to play ambient sound:', err);
       currentAmbientSound = null;
     });
+  }
+}
+
+// ============================================
+// AUTHENTICATION FUNCTIONS
+// ============================================
+
+let supabaseClient = null;
+
+async function initializeAuth(retryCount = 0) {
+  // Check if Supabase library is loaded
+  if (!window.supabase || !window.supabase.createClient) {
+    if (retryCount < 5) {
+      console.log(`Supabase library not loaded, retrying (${retryCount + 1}/5)...`);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return initializeAuth(retryCount + 1);
+    }
+    console.error('Supabase library not loaded or createClient not found after retries');
+    return; // Proceed without auth - meditations will still work
+  }
+
+  try {
+    // Initialize Supabase client
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Check for existing session
+    await checkSession();
+
+    // Listen for auth state changes
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      updateAuthUI(session);
+    });
+  } catch (error) {
+    console.error('Failed to initialize Supabase:', error);
+    // Don't throw - allow the extension to work without auth
+  }
+}
+
+async function checkSession() {
+  if (!supabaseClient) return;
+
+  try {
+    // 1. Check Supabase local session
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (session) {
+      updateAuthUI(session);
+      return;
+    }
+
+    // 2. If no local session, check for cookies from the main site
+    // We need the 'cookies' permission for this
+    if (chrome.cookies) {
+      const cookieName = `sb-${PROJECT_REF}-auth-token`;
+
+      chrome.cookies.get({ url: SITE_URL, name: cookieName }, async (cookie) => {
+        if (cookie) {
+          try {
+            // Parse the cookie value
+            let cookieValue = cookie.value;
+            if (cookieValue.startsWith('base64-')) {
+              cookieValue = atob(cookieValue.replace('base64-', ''));
+            }
+
+            // Try to parse
+            let tokenData;
+            try {
+              tokenData = JSON.parse(decodeURIComponent(cookieValue));
+            } catch (e) {
+              // Try without decode
+              tokenData = JSON.parse(cookieValue);
+            }
+
+            if (tokenData) {
+              // It might be an array or object depending on version
+              const accessToken = tokenData.access_token || tokenData[0];
+              const refreshToken = tokenData.refresh_token || tokenData[1];
+
+              if (accessToken && refreshToken) {
+                const { data, error } = await supabaseClient.auth.setSession({
+                  access_token: accessToken,
+                  refresh_token: refreshToken
+                });
+
+                if (!error && data.session) {
+                  console.log('Session synced from website cookies');
+                  updateAuthUI(data.session);
+                }
+              }
+            }
+          } catch (e) {
+            console.error('Failed to parse auth cookie:', e);
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error checking session:', error);
+  }
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const errorEl = elements.authError;
+
+  errorEl.classList.add('hidden');
+  errorEl.textContent = '';
+
+  if (!supabaseClient) {
+    errorEl.textContent = 'Authentication service not available. Please try again later.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+
+  const btn = elements.loginForm.querySelector('button');
+  const originalText = btn.textContent;
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    // Success - UI will update via onAuthStateChange
+    closeProfileModal();
+
+  } catch (error) {
+    console.error('Login error:', error);
+    errorEl.textContent = error.message || 'Failed to sign in';
+    errorEl.classList.remove('hidden');
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+async function handleLogout() {
+  if (!supabaseClient) return;
+
+  try {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) throw error;
+
+    // UI will update via onAuthStateChange
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+}
+
+function updateAuthUI(session) {
+  if (session) {
+    // Logged In
+    elements.authLoggedOut.classList.add('hidden');
+    elements.authLoggedIn.classList.remove('hidden');
+    elements.userEmail.textContent = session.user.email;
+
+    // Update profile button to show active state
+    if (elements.profileBtn) {
+      elements.profileBtn.style.color = 'var(--celadon-dark)';
+    }
+  } else {
+    // Logged Out
+    elements.authLoggedOut.classList.remove('hidden');
+    elements.authLoggedIn.classList.add('hidden');
+    elements.userEmail.textContent = '';
+
+    // Reset profile button
+    if (elements.profileBtn) {
+      elements.profileBtn.style.color = '';
+    }
+  }
+
+  if (elements.authLoading) {
+    elements.authLoading.classList.add('hidden');
+  }
+}
+
+function openProfileModal() {
+  if (elements.profileModal) {
+    elements.profileModal.classList.remove('hidden');
+  }
+}
+
+function closeProfileModal() {
+  if (elements.profileModal) {
+    elements.profileModal.classList.add('hidden');
   }
 }
 

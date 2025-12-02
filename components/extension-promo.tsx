@@ -35,7 +35,7 @@ export function ExtensionPromo() {
               </div>
 
               <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-foreground">
-                Breathe anywhere on the web
+                Meditate anywhere on the web
               </h2>
 
               <p className="text-muted-foreground text-lg leading-relaxed">
@@ -101,7 +101,7 @@ export function ExtensionPromo() {
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-celadon to-celadon-2 flex items-center justify-center shadow-sm">
                       <Image
                         src="/logo.svg"
-                        alt="Breathe Extension"
+                        alt="Daily Meditation Guide Extension"
                         width={20}
                         height={20}
                       />
@@ -113,12 +113,12 @@ export function ExtensionPromo() {
                     <div className="flex items-center gap-3">
                       <Image
                         src="/logo.svg"
-                        alt="Breathe"
+                        alt="Daily Meditation Guide"
                         width={32}
                         height={32}
                       />
                       <div>
-                        <h4 className="font-semibold text-foreground text-sm">Breathe</h4>
+                        <h4 className="font-semibold text-foreground text-sm">Daily Meditation Guide</h4>
                         <p className="text-xs text-muted-foreground">Take a mindful moment</p>
                       </div>
                     </div>

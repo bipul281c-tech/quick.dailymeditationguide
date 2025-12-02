@@ -10,18 +10,18 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
-    default: "Breathe | Guided Meditation & Sleep Stories",
-    template: "%s | Breathe",
+    default: "Daily Meditation Guide | Guided Meditation & Sleep Stories",
+    template: "%s | Daily Meditation Guide",
   },
   description:
-    "Immersive audio landscapes, guided meditations, and sleep stories designed to help you focus, breathe, and restore balance to your day. Find your center with Breathe.",
-  applicationName: "Breathe",
-  authors: [{ name: "Breathe Team" }],
+    "Immersive audio landscapes, guided meditations, and sleep stories designed to help you focus, breathe, and restore balance to your day. Find your center with Daily Meditation Guide.",
+  applicationName: "Daily Meditation Guide",
+  authors: [{ name: "Daily Meditation Guide Team" }],
   generator: "v0.app",
   keywords: ["meditation", "mindfulness", "sleep stories", "focus", "relaxation", "ambient sounds", "guided meditation", "breathing exercises"],
   referrer: "origin-when-cross-origin",
-  creator: "Breathe Team",
-  publisher: "Breathe",
+  creator: "Daily Meditation Guide Team",
+  publisher: "Daily Meditation Guide",
   formatDetection: {
     email: false,
     address: false,
@@ -32,17 +32,17 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Breathe | Guided Meditation & Sleep Stories",
+    title: "Daily Meditation Guide | Guided Meditation & Sleep Stories",
     description:
       "Immersive audio landscapes, guided meditations, and sleep stories designed to help you focus, breathe, and restore balance to your day.",
     url: "https://www.quick.dailymeditationguide.com",
-    siteName: "Breathe",
+    siteName: "Daily Meditation Guide",
     images: [
       {
         url: "/calm-ocean-waves-at-sunset.jpg", // Using existing high-quality image
         width: 1200,
         height: 630,
-        alt: "Breathe - Guided Meditation & Sleep Stories",
+        alt: "Daily Meditation Guide - Guided Meditation & Sleep Stories",
       },
     ],
     locale: "en_US",
@@ -50,11 +50,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Breathe | Guided Meditation & Sleep Stories",
+    title: "Daily Meditation Guide | Guided Meditation & Sleep Stories",
     description:
       "Immersive audio landscapes, guided meditations, and sleep stories designed to help you focus, breathe, and restore balance to your day.",
     images: ["/calm-ocean-waves-at-sunset.jpg"], // Using existing high-quality image
-    creator: "@breathe_app", // Placeholder
+    creator: "@dailymeditationguide", // Placeholder
   },
   icons: {
     icon: [
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Breathe",
+    title: "Daily Meditation Guide",
   },
   robots: {
     index: true,

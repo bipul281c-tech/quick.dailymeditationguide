@@ -132,7 +132,7 @@ browser-extension/
 
 ## 🔗 Links
 
-- **Website:** https://dailymeditationguide.com
+- **Website:** https://www.quick.dailymeditationguide.com
 - **API:** https://www.quick.dailymeditationguide.com
 - **Support:** Contact via website
 

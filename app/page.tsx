@@ -13,7 +13,7 @@ export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Breathe",
+    name: "Daily Meditation Guide",
     url: "https://www.quick.dailymeditationguide.com",
     potentialAction: {
       "@type": "SearchAction",
@@ -22,7 +22,7 @@ export default function Home() {
     },
     publisher: {
       "@type": "Organization",
-      name: "Breathe",
+      name: "Daily Meditation Guide",
       logo: {
         "@type": "ImageObject",
         url: "https://www.quick.dailymeditationguide.com/logo.svg",
