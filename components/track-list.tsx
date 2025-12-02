@@ -1,16 +1,48 @@
 "use client"
 
-import { Play, Pause, MoreHorizontal } from "lucide-react"
-import type { Meditation } from "@/types/meditation"
+import { Play, Pause, MoreHorizontal, Heart, Star } from "lucide-react"
+import type { MeditationWithId } from "@/types/meditation"
+import { useMeditationTracking } from "@/hooks/use-meditation-tracking"
+import { useAuth } from "@/contexts/auth-context"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// Skeleton for track action buttons
+function TrackActionsSkeleton() {
+  return (
+    <div className="flex items-center gap-2">
+      <Skeleton className="w-4 h-4 rounded-full" />
+      <Skeleton className="w-4 h-4 rounded-full" />
+    </div>
+  )
+}
 
 interface TrackListProps {
-  meditations: Meditation[]
+  meditations: MeditationWithId[]
   currentTrackIndex: number
   isPlaying: boolean
   onTrackSelect: (index: number) => void
 }
 
 export function TrackList({ meditations, currentTrackIndex, isPlaying, onTrackSelect }: TrackListProps) {
+  const { initializing: authInitializing } = useAuth()
+  const { isLiked, isFavorited, toggleLike, toggleFavorite, isAuthenticated, loading: trackingLoading } = useMeditationTracking()
+
+  // Show skeleton while auth is initializing or tracking data is loading
+  const showActionSkeleton = authInitializing || (isAuthenticated && trackingLoading)
+
+  // Use actual meditation ID instead of array index
+  const handleLikeClick = async (e: React.MouseEvent, meditationId: number) => {
+    e.stopPropagation()
+    if (!isAuthenticated) return
+    await toggleLike(meditationId)
+  }
+
+  const handleFavoriteClick = async (e: React.MouseEvent, meditationId: number) => {
+    e.stopPropagation()
+    if (!isAuthenticated) return
+    await toggleFavorite(meditationId)
+  }
+
   return (
     <div className="mt-24 max-w-4xl mx-auto w-full overflow-hidden">
       <div className="flex items-end justify-between mb-8">
@@ -21,6 +53,9 @@ export function TrackList({ meditations, currentTrackIndex, isPlaying, onTrackSe
       <div className="grid gap-3">
         {meditations.map((track, index) => {
           const isCurrentTrack = currentTrackIndex === index
+          // Use actual meditation ID for like/favorite status
+          const trackIsLiked = isLiked(track.id)
+          const trackIsFavorited = isFavorited(track.id)
 
           return (
             <div
@@ -66,12 +101,35 @@ export function TrackList({ meditations, currentTrackIndex, isPlaying, onTrackSe
                   </div>
                 )}
               </div>
-              <button
-                className="ml-4 text-muted-foreground/50 hover:text-foreground shrink-0"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreHorizontal className="w-5 h-5" />
-              </button>
+              <div className="ml-4 flex items-center gap-2 shrink-0">
+                {/* Show skeleton during auth/tracking initialization */}
+                {showActionSkeleton ? (
+                  <TrackActionsSkeleton />
+                ) : isAuthenticated ? (
+                  <>
+                    <button
+                      className={`p-1.5 rounded-full transition-colors ${trackIsFavorited ? "text-amber-400" : "text-muted-foreground/50 hover:text-foreground"}`}
+                      onClick={(e) => handleFavoriteClick(e, track.id)}
+                      aria-label={trackIsFavorited ? "Remove from favorites" : "Add to favorites"}
+                    >
+                      <Star className={`w-4 h-4 ${trackIsFavorited ? "fill-amber-400" : ""}`} />
+                    </button>
+                    <button
+                      className={`p-1.5 rounded-full transition-colors ${trackIsLiked ? "text-peach" : "text-muted-foreground/50 hover:text-foreground"}`}
+                      onClick={(e) => handleLikeClick(e, track.id)}
+                      aria-label={trackIsLiked ? "Unlike" : "Like"}
+                    >
+                      <Heart className={`w-4 h-4 ${trackIsLiked ? "fill-peach" : ""}`} />
+                    </button>
+                  </>
+                ) : null}
+                <button
+                  className="p-1.5 text-muted-foreground/50 hover:text-foreground"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreHorizontal className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           )
         })}

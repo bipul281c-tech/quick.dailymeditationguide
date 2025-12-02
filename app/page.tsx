@@ -4,9 +4,12 @@ import { Footer } from "@/components/footer"
 import { AmbientBackground } from "@/components/ambient-background"
 import { MeditationPlayer } from "@/components/meditation-player"
 import { ExtensionPromo } from "@/components/extension-promo"
-import meditations from "@/content/meditations.json"
+import { getAllMeditations } from "@/lib/meditations"
 
 export default function Home() {
+  // Fetch meditations with stable IDs from the data layer
+  const meditations = getAllMeditations()
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",

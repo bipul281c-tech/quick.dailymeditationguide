@@ -1,5 +1,8 @@
+"use client"
+
 import Image from "next/image"
 import { Search } from "lucide-react"
+import { UserMenu } from "@/components/auth/user-menu"
 
 export function Navigation() {
   return (
@@ -32,9 +35,7 @@ export function Navigation() {
           <button className="text-muted-foreground hover:text-foreground transition-colors">
             <Search className="w-5 h-5" />
           </button>
-          <button className="hidden md:block px-4 py-2 text-xs font-semibold tracking-wide bg-primary text-primary-foreground rounded-full hover:bg-celadon-dark hover:shadow-lg hover:shadow-celadon/30 transition-all duration-300">
-            Sign in
-          </button>
+          <UserMenu />
         </div>
       </div>
     </nav>

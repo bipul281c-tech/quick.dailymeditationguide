@@ -1,21 +1,46 @@
 import type { Meditation, MeditationWithId } from "@/types/meditation"
 import meditationsData from "@/content/meditations.json"
 
-// Helper to get all meditations with IDs
+// Generate a stable numeric ID from a string (used for meditation titles)
+// Uses a simple hash function to create a consistent numeric ID
+function generateStableId(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+  // Make sure it's positive and within safe integer range
+  return Math.abs(hash)
+}
+
+// Cache for meditations with IDs to avoid regenerating on each call
+let cachedMeditations: MeditationWithId[] | null = null
+let meditationsById: Map<number, MeditationWithId> | null = null
+
+// Helper to get all meditations with stable IDs
 export function getAllMeditations(): MeditationWithId[] {
-  return (meditationsData as Meditation[]).map((meditation, index) => ({
+  if (cachedMeditations) {
+    return cachedMeditations
+  }
+
+  cachedMeditations = (meditationsData as Meditation[]).map((meditation) => ({
     ...meditation,
-    id: index,
+    id: generateStableId(meditation.title + meditation.audio_link),
   }))
+
+  // Build the ID map for quick lookups
+  meditationsById = new Map(cachedMeditations.map((m) => [m.id, m]))
+
+  return cachedMeditations
 }
 
 // Get a single meditation by ID
 export function getMeditationById(id: number): MeditationWithId | null {
-  const meditations = getAllMeditations()
-  if (id < 0 || id >= meditations.length) {
-    return null
-  }
-  return meditations[id]
+  // Ensure cache is populated
+  getAllMeditations()
+
+  return meditationsById?.get(id) ?? null
 }
 
 // Search meditations by keyword in title, description, or keywords array

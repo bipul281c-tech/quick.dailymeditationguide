@@ -2,13 +2,27 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
-import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Heart } from "lucide-react"
+import { useState, useRef, useEffect, useCallback } from "react"
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Heart, Star } from "lucide-react"
 import { TrackList } from "./track-list"
-import type { Meditation } from "@/types/meditation"
+import type { MeditationWithId } from "@/types/meditation"
+import { useMeditationTracking } from "@/hooks/use-meditation-tracking"
+import { useAuth } from "@/contexts/auth-context"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Skeleton } from "@/components/ui/skeleton"
+
+// Skeleton for like/favorite buttons during auth loading
+function ActionButtonsSkeleton() {
+  return (
+    <div className="flex items-center gap-2">
+      <Skeleton className="w-5 h-5 rounded-full" />
+      <Skeleton className="w-5 h-5 rounded-full" />
+    </div>
+  )
+}
 
 interface MeditationPlayerProps {
-  meditations: Meditation[]
+  meditations: MeditationWithId[]
 }
 
 export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
@@ -16,12 +30,37 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
-  const [isLiked, setIsLiked] = useState(false)
   const [isShuffle, setIsShuffle] = useState(false)
   const [isRepeat, setIsRepeat] = useState(false)
+  const [hasRecordedPlay, setHasRecordedPlay] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
+  const progressUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  const { user, initializing: authInitializing } = useAuth()
+  const {
+    isLiked,
+    isFavorited,
+    toggleLike,
+    toggleFavorite,
+    recordPlay,
+    updateProgress,
+    isAuthenticated,
+    loading: trackingLoading
+  } = useMeditationTracking()
+
+  // Show skeleton while auth is initializing (but tracking data is loading)
+  const showActionSkeleton = authInitializing || (isAuthenticated && trackingLoading)
 
   const currentTrack = meditations[currentTrackIndex]
+  // Use the actual meditation ID for like/favorite checks, not the array index
+  const currentMeditationId = currentTrack?.id
+  const currentIsLiked = isLiked(currentMeditationId)
+  const currentIsFavorited = isFavorited(currentMeditationId)
+
+  // Reset hasRecordedPlay when track changes
+  useEffect(() => {
+    setHasRecordedPlay(false)
+  }, [currentTrackIndex])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -30,6 +69,10 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
     const updateTime = () => setCurrentTime(audio.currentTime)
     const updateDuration = () => setDuration(audio.duration || 0)
     const handleEnded = () => {
+      // Record completion
+      if (isAuthenticated) {
+        updateProgress(Math.floor(audio.duration || 0), true)
+      }
       if (isRepeat) {
         audio.currentTime = 0
         audio.play()
@@ -47,17 +90,53 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
       audio.removeEventListener("loadedmetadata", updateDuration)
       audio.removeEventListener("ended", handleEnded)
     }
-  }, [isRepeat, currentTrackIndex])
+  }, [isRepeat, currentTrackIndex, isAuthenticated, updateProgress])
 
-  const togglePlay = () => {
+  // Progress tracking interval
+  useEffect(() => {
+    if (isPlaying && isAuthenticated) {
+      progressUpdateIntervalRef.current = setInterval(() => {
+        if (audioRef.current) {
+          updateProgress(Math.floor(audioRef.current.currentTime))
+        }
+      }, 10000) // Update every 10 seconds
+    } else {
+      if (progressUpdateIntervalRef.current) {
+        clearInterval(progressUpdateIntervalRef.current)
+      }
+    }
+
+    return () => {
+      if (progressUpdateIntervalRef.current) {
+        clearInterval(progressUpdateIntervalRef.current)
+      }
+    }
+  }, [isPlaying, isAuthenticated, updateProgress])
+
+  const togglePlay = useCallback(() => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause()
       } else {
         audioRef.current.play()
+        // Record play when starting for the first time - use actual meditation ID
+        if (!hasRecordedPlay && isAuthenticated && duration > 0 && currentMeditationId) {
+          recordPlay(currentMeditationId, Math.floor(duration))
+          setHasRecordedPlay(true)
+        }
       }
       setIsPlaying(!isPlaying)
     }
+  }, [isPlaying, hasRecordedPlay, isAuthenticated, duration, currentMeditationId, recordPlay])
+
+  const handleLikeClick = async () => {
+    if (!isAuthenticated || !currentMeditationId) return
+    await toggleLike(currentMeditationId)
+  }
+
+  const handleFavoriteClick = async () => {
+    if (!isAuthenticated || !currentMeditationId) return
+    await toggleFavorite(currentMeditationId)
   }
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,13 +236,47 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
               <div>
                 <div className="flex items-start justify-between mb-2">
                   <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Now Playing</span>
-                  <button
-                    onClick={() => setIsLiked(!isLiked)}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label={isLiked ? "Unlike" : "Like"}
-                  >
-                    <Heart className={`w-5 h-5 ${isLiked ? "fill-peach text-peach" : ""}`} />
-                  </button>
+                  {/* Show skeleton during auth/tracking initialization to prevent layout shift */}
+                  {showActionSkeleton ? (
+                    <ActionButtonsSkeleton />
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={handleFavoriteClick}
+                              className={`transition-colors ${isAuthenticated ? "text-muted-foreground hover:text-foreground" : "text-muted-foreground/50 cursor-not-allowed"}`}
+                              aria-label={currentIsFavorited ? "Remove from favorites" : "Add to favorites"}
+                              disabled={!isAuthenticated}
+                            >
+                              <Star className={`w-5 h-5 ${currentIsFavorited ? "fill-amber-400 text-amber-400" : ""}`} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {isAuthenticated ? (currentIsFavorited ? "Remove from favorites" : "Add to favorites") : "Sign in to save favorites"}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={handleLikeClick}
+                              className={`transition-colors ${isAuthenticated ? "text-muted-foreground hover:text-foreground" : "text-muted-foreground/50 cursor-not-allowed"}`}
+                              aria-label={currentIsLiked ? "Unlike" : "Like"}
+                              disabled={!isAuthenticated}
+                            >
+                              <Heart className={`w-5 h-5 ${currentIsLiked ? "fill-peach text-peach" : ""}`} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {isAuthenticated ? (currentIsLiked ? "Unlike" : "Like") : "Sign in to like tracks"}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  )}
                 </div>
                 <h2 className="text-2xl md:text-3xl font-medium text-foreground tracking-tight mb-3 line-clamp-2">
                   {currentTrack.title}
