@@ -1,10 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Guided Meditation Player",
-  "version": "1.0.0",
-  "description": "Access guided meditation sessions from your browser. Browse, search, and play calming meditation audio directly from the toolbar.",
+  "name": "Breathe - Guided Meditation",
+  "version": "1.1.0",
+  "description": "Take mindful breaks without leaving your browser. Access guided meditations, breathing exercises, and ambient sounds from your toolbar.",
   "permissions": [
-    "storage"
+    "storage",
+    "alarms",
+    "notifications"
   ],
   "host_permissions": [
     "http://localhost:3000/*",
@@ -18,7 +20,7 @@
       "48": "icons/icon-48.png",
       "128": "icons/icon-128.png"
     },
-    "default_title": "Guided Meditation Player"
+    "default_title": "Breathe - Take a mindful moment"
   },
   "icons": {
     "16": "icons/icon-16.png",

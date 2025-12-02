@@ -1,13 +1,35 @@
-// Guided Meditation Chrome Extension
-// API Integration and UI Controller
+// Breathe - Guided Meditation Chrome Extension
+// API Integration, Breathing Exercises, Ambient Sounds
 
 // Default API configuration
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'https://www.quick.dailymeditationguide.com';
+
+// Breathing patterns (inhale, hold, exhale in seconds)
+const BREATHING_PATTERNS = {
+  relaxed: { name: 'Relaxed', inhale: 4, hold: 4, exhale: 4 },
+  calm: { name: 'Calm', inhale: 4, hold: 7, exhale: 8 },
+  energize: { name: 'Energize', inhale: 4, hold: 4, exhale: 2 }
+};
+
+// Ambient sounds URLs (using free sounds)
+const AMBIENT_SOUNDS = {
+  rain: 'https://assets.mixkit.co/active_storage/sfx/2515/2515-preview.mp3',
+  ocean: 'https://assets.mixkit.co/active_storage/sfx/2516/2516-preview.mp3',
+  forest: 'https://assets.mixkit.co/active_storage/sfx/1225/1225-preview.mp3',
+  fire: 'https://assets.mixkit.co/active_storage/sfx/2518/2518-preview.mp3',
+  birds: 'https://assets.mixkit.co/active_storage/sfx/2468/2468-preview.mp3',
+  wind: 'https://assets.mixkit.co/active_storage/sfx/2517/2517-preview.mp3'
+};
 
 // State
 let meditations = [];
 let currentMeditation = null;
 let isPlaying = false;
+let breathingInterval = null;
+let breathingActive = false;
+let currentBreathingPattern = 'relaxed';
+let ambientAudio = null;
+let currentAmbientSound = null;
 
 // DOM Elements
 const elements = {
@@ -27,13 +49,22 @@ const elements = {
   pauseIconSVG: null,
   progressKnob: null,
   currentTimeEl: null,
-  totalTimeEl: null
+  totalTimeEl: null,
+  gotoSiteBtn: null,
+  // New elements
+  breathingBtn: null,
+  soundsBtn: null,
+  meditateBtn: null,
+  breathingModal: null,
+  soundsModal: null,
+  greeting: null
 };
 
 // Initialize the extension
 document.addEventListener('DOMContentLoaded', async () => {
   initializeElements();
   setupEventListeners();
+  updateGreeting();
   await fetchMeditations();
 });
 
@@ -56,6 +87,31 @@ function initializeElements() {
   elements.progressKnob = document.getElementById('progressKnob');
   elements.currentTimeEl = document.getElementById('currentTime');
   elements.totalTimeEl = document.getElementById('totalTime');
+  elements.gotoSiteBtn = document.getElementById('goto-site-btn');
+
+  // New elements
+  elements.breathingBtn = document.getElementById('breathing-btn');
+  elements.soundsBtn = document.getElementById('sounds-btn');
+  elements.meditateBtn = document.getElementById('meditate-btn');
+  elements.breathingModal = document.getElementById('breathing-modal');
+  elements.soundsModal = document.getElementById('sounds-modal');
+  elements.greeting = document.getElementById('greeting');
+}
+
+// Update greeting based on time of day
+function updateGreeting() {
+  const hour = new Date().getHours();
+  let greeting = 'Good evening';
+
+  if (hour < 12) {
+    greeting = 'Good morning';
+  } else if (hour < 17) {
+    greeting = 'Good afternoon';
+  }
+
+  if (elements.greeting) {
+    elements.greeting.textContent = greeting;
+  }
 }
 
 
@@ -70,6 +126,12 @@ function setupEventListeners() {
   // Retry
   elements.retryBtn.addEventListener('click', () => fetchMeditations());
 
+  // Navigation
+  if (elements.gotoSiteBtn) {
+    elements.gotoSiteBtn.addEventListener('click', () => {
+      chrome.tabs.create({ url: API_BASE_URL });
+    });
+  }
 
   // Audio Player
   elements.playPauseBtn.addEventListener('click', togglePlayPause);
@@ -80,6 +142,103 @@ function setupEventListeners() {
   elements.audioElement.addEventListener('ended', handleAudioEnded);
   elements.audioElement.addEventListener('loadedmetadata', updateDuration);
   elements.audioElement.addEventListener('error', handleAudioError);
+
+  // Quick action buttons
+  if (elements.breathingBtn) {
+    elements.breathingBtn.addEventListener('click', openBreathingModal);
+  }
+  if (elements.soundsBtn) {
+    elements.soundsBtn.addEventListener('click', openSoundsModal);
+  }
+  if (elements.meditateBtn) {
+    elements.meditateBtn.addEventListener('click', () => {
+      // Scroll to meditation list
+      elements.meditationList.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  // Modal close buttons
+  const closeBreathing = document.getElementById('close-breathing');
+  const closeSounds = document.getElementById('close-sounds');
+
+  if (closeBreathing) {
+    closeBreathing.addEventListener('click', closeBreathingModal);
+  }
+  if (closeSounds) {
+    closeSounds.addEventListener('click', closeSoundsModal);
+  }
+
+  // Breathing controls
+  const startBreathingBtn = document.getElementById('start-breathing');
+  if (startBreathingBtn) {
+    startBreathingBtn.addEventListener('click', toggleBreathing);
+  }
+
+  // Breathing pattern options
+  document.querySelectorAll('.breathing-option').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.breathing-option').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      currentBreathingPattern = e.target.dataset.pattern;
+    });
+  });
+
+  // Sound buttons
+  document.querySelectorAll('.sound-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const sound = e.currentTarget.dataset.sound;
+      toggleAmbientSound(sound, e.currentTarget);
+    });
+  });
+
+  // Ambient volume control
+  const ambientVolume = document.getElementById('ambient-volume');
+  if (ambientVolume) {
+    ambientVolume.addEventListener('input', (e) => {
+      if (ambientAudio) {
+        ambientAudio.volume = e.target.value / 100;
+      }
+    });
+  }
+
+  // Bottom navigation
+  const navBreathe = document.getElementById('nav-breathe');
+  const navSounds = document.getElementById('nav-sounds');
+  const navHome = document.getElementById('nav-home');
+
+  if (navBreathe) {
+    navBreathe.addEventListener('click', () => {
+      openBreathingModal();
+      updateNavActive('nav-breathe');
+    });
+  }
+
+  if (navSounds) {
+    navSounds.addEventListener('click', () => {
+      openSoundsModal();
+      updateNavActive('nav-sounds');
+    });
+  }
+
+  if (navHome) {
+    navHome.addEventListener('click', () => {
+      updateNavActive('nav-home');
+    });
+  }
+}
+
+// Update active navigation state
+function updateNavActive(activeId) {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('nav-active');
+    item.classList.add('nav-inactive');
+  });
+
+  const activeItem = document.getElementById(activeId);
+  if (activeItem) {
+    activeItem.classList.remove('nav-inactive');
+    activeItem.classList.add('nav-active');
+  }
 }
 
 // Fetch meditations from API
@@ -472,5 +631,155 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+// ============================================
+// BREATHING EXERCISE FUNCTIONS
+// ============================================
+
+function openBreathingModal() {
+  if (elements.breathingModal) {
+    elements.breathingModal.classList.remove('hidden');
+  }
+}
+
+function closeBreathingModal() {
+  if (elements.breathingModal) {
+    elements.breathingModal.classList.add('hidden');
+    stopBreathing();
+    updateNavActive('nav-home');
+  }
+}
+
+function toggleBreathing() {
+  const btn = document.getElementById('start-breathing');
+
+  if (breathingActive) {
+    stopBreathing();
+    btn.textContent = 'Start Breathing';
+  } else {
+    startBreathing();
+    btn.textContent = 'Stop';
+  }
+}
+
+function startBreathing() {
+  breathingActive = true;
+  const pattern = BREATHING_PATTERNS[currentBreathingPattern];
+  const circle = document.getElementById('breathing-circle');
+  const text = document.getElementById('breathing-text');
+  const count = document.getElementById('breathing-count');
+
+  let phase = 'inhale';
+  let counter = pattern.inhale;
+
+  // Initial state
+  text.textContent = 'Inhale';
+  count.textContent = counter;
+  circle.classList.add('inhale');
+  circle.classList.remove('exhale');
+
+  breathingInterval = setInterval(() => {
+    counter--;
+
+    if (counter <= 0) {
+      // Move to next phase
+      if (phase === 'inhale') {
+        phase = 'hold';
+        counter = pattern.hold;
+        text.textContent = 'Hold';
+        circle.classList.remove('inhale');
+      } else if (phase === 'hold') {
+        phase = 'exhale';
+        counter = pattern.exhale;
+        text.textContent = 'Exhale';
+        circle.classList.add('exhale');
+      } else {
+        phase = 'inhale';
+        counter = pattern.inhale;
+        text.textContent = 'Inhale';
+        circle.classList.remove('exhale');
+        circle.classList.add('inhale');
+      }
+    }
+
+    count.textContent = counter;
+  }, 1000);
+}
+
+function stopBreathing() {
+  breathingActive = false;
+  if (breathingInterval) {
+    clearInterval(breathingInterval);
+    breathingInterval = null;
+  }
+
+  const circle = document.getElementById('breathing-circle');
+  const text = document.getElementById('breathing-text');
+  const count = document.getElementById('breathing-count');
+
+  if (circle) {
+    circle.classList.remove('inhale', 'exhale');
+  }
+  if (text) {
+    text.textContent = 'Ready';
+  }
+  if (count) {
+    count.textContent = '';
+  }
+}
+
+// ============================================
+// AMBIENT SOUNDS FUNCTIONS
+// ============================================
+
+function openSoundsModal() {
+  if (elements.soundsModal) {
+    elements.soundsModal.classList.remove('hidden');
+  }
+}
+
+function closeSoundsModal() {
+  if (elements.soundsModal) {
+    elements.soundsModal.classList.add('hidden');
+    updateNavActive('nav-home');
+  }
+}
+
+function toggleAmbientSound(sound, button) {
+  // If clicking the same sound, stop it
+  if (currentAmbientSound === sound && ambientAudio) {
+    ambientAudio.pause();
+    ambientAudio = null;
+    currentAmbientSound = null;
+    button.classList.remove('active');
+    return;
+  }
+
+  // Stop current sound if any
+  if (ambientAudio) {
+    ambientAudio.pause();
+    document.querySelectorAll('.sound-btn').forEach(btn => btn.classList.remove('active'));
+  }
+
+  // Play new sound
+  const soundUrl = AMBIENT_SOUNDS[sound];
+  if (soundUrl) {
+    ambientAudio = new Audio(soundUrl);
+    ambientAudio.loop = true;
+
+    const volumeSlider = document.getElementById('ambient-volume');
+    if (volumeSlider) {
+      ambientAudio.volume = volumeSlider.value / 100;
+    }
+
+    ambientAudio.play().then(() => {
+      currentAmbientSound = sound;
+      button.classList.add('active');
+    }).catch(err => {
+      console.error('Failed to play ambient sound:', err);
+      currentAmbientSound = null;
+    });
+  }
 }
 

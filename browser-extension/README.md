@@ -1,14 +1,16 @@
-# Guided Meditation Chrome Extension
+# Breathe - Guided Meditation Browser Extension
 
-A Chrome browser extension that integrates with the Guided Meditation API, allowing you to browse, search, and play meditation sessions directly from your browser toolbar.
+A beautiful browser extension for mindful breaks. Access guided meditations, breathing exercises, and ambient sounds right from your browser toolbar.
 
 ## Features
 
+- 🧘 **Breathing Exercises** - Animated breathing guide with multiple patterns (Relaxed 4-4-4, Calm 4-7-8, Energize 4-4-2)
+- 🎵 **Ambient Sounds** - Rain, ocean, forest, fireplace, birds, and wind sounds
+- 🎧 **Meditation Player** - Play guided meditation sessions directly in the popup
+- 🔔 **Mindful Reminders** - Customizable notifications to take mindful breaks
 - 🔍 **Search Meditations** - Find meditations by keywords, title, or description
-- 🎵 **Built-in Audio Player** - Play meditation audio directly in the popup
-- 🎨 **Beautiful UI** - Dark theme with smooth animations
-- ⚙️ **Configurable API** - Set your own API base URL for different environments
-- 📱 **Responsive Design** - Works great in the popup window
+- 📚 **Categorized Library** - Browse meditations by category (Sleep, Focus, Calm, etc.)
+- 🎨 **Beautiful UI** - Calming celadon/peach color palette with ambient animations
 
 ## Installation
 
@@ -97,8 +99,10 @@ browser-extension/
 
 The extension requires the following permissions:
 
-- `storage` - To save user preferences (API URL)
-- Host permissions for `localhost` and Vercel apps - To make API requests
+- `storage` - To save user preferences and reminder settings
+- `alarms` - For scheduling mindful reminder notifications
+- `notifications` - To display reminder notifications
+- Host permissions - To access the meditation API
 
 ## Troubleshooting
 
