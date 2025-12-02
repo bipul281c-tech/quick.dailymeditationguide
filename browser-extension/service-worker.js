@@ -1,4 +1,4 @@
-// Breathe - Guided Meditation Chrome Extension - Service Worker
+// Daily Meditation Guide - Chrome Extension - Service Worker
 // Handles background tasks, reminders, and extension lifecycle
 
 // Default API configuration
@@ -20,7 +20,7 @@ const REMINDER_MESSAGES = [
 
 // Extension installed or updated
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log('Breathe extension installed/updated:', details.reason);
+  console.log('Daily Meditation Guide extension installed/updated:', details.reason);
 
   // Set default settings on first install
   if (details.reason === 'install') {
@@ -39,7 +39,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.notifications.create('welcome', {
       type: 'basic',
       iconUrl: 'icons/icon-128.png',
-      title: 'Welcome to Breathe! 🧘',
+      title: 'Welcome to Daily Meditation Guide! 🧘',
       message: 'Take mindful breaks throughout your day. Click the extension to start.',
       priority: 2
     });
@@ -163,5 +163,5 @@ async function fetchMeditationsBackground(query = '') {
 }
 
 // Log when service worker starts
-console.log('Breathe service worker started');
+console.log('Daily Meditation Guide service worker started');
 

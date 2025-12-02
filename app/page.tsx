@@ -7,8 +7,32 @@ import { ExtensionPromo } from "@/components/extension-promo"
 import meditations from "@/content/meditations.json"
 
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Breathe",
+    url: "https://www.quick.dailymeditationguide.com",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://www.quick.dailymeditationguide.com/search?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Breathe",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.quick.dailymeditationguide.com/logo.svg",
+      },
+    },
+  }
+
   return (
     <div className="bg-background text-foreground antialiased selection:bg-celadon-light selection:text-primary-foreground overflow-x-hidden relative min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <AmbientBackground />
       <Navigation />
 

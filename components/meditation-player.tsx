@@ -160,6 +160,7 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
                   <button
                     onClick={() => setIsLiked(!isLiked)}
                     className="text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={isLiked ? "Unlike" : "Like"}
                   >
                     <Heart className={`w-5 h-5 ${isLiked ? "fill-peach text-peach" : ""}`} />
                   </button>
@@ -180,6 +181,7 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
                     value={currentTime}
                     onChange={handleSeek}
                     className="w-full h-1 audio-slider"
+                    aria-label="Seek Slider"
                   />
                   <div className="flex justify-between text-xs font-medium text-muted-foreground tabular-nums">
                     <span>{formatTime(currentTime)}</span>
@@ -192,18 +194,20 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
                   <button
                     onClick={() => setIsShuffle(!isShuffle)}
                     className={`p-2 transition-colors ${isShuffle ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                    aria-label={isShuffle ? "Disable Shuffle" : "Enable Shuffle"}
                   >
                     <Shuffle className="w-5 h-5" />
                   </button>
 
                   <div className="flex items-center gap-6">
-                    <button onClick={handlePrev} className="text-foreground/70 hover:text-foreground transition-colors">
+                    <button onClick={handlePrev} className="text-foreground/70 hover:text-foreground transition-colors" aria-label="Previous Track">
                       <SkipBack className="w-6 h-6 fill-foreground/20" />
                     </button>
 
                     <button
                       onClick={togglePlay}
                       className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-celadon-dark shadow-xl shadow-celadon/30 transition-all duration-300 transform hover:scale-105"
+                      aria-label={isPlaying ? "Pause" : "Play"}
                     >
                       {isPlaying ? (
                         <Pause className="w-6 h-6 fill-current" />
@@ -212,7 +216,7 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
                       )}
                     </button>
 
-                    <button onClick={handleNext} className="text-foreground/70 hover:text-foreground transition-colors">
+                    <button onClick={handleNext} className="text-foreground/70 hover:text-foreground transition-colors" aria-label="Next Track">
                       <SkipForward className="w-6 h-6 fill-foreground/20" />
                     </button>
                   </div>
@@ -220,6 +224,7 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
                   <button
                     onClick={() => setIsRepeat(!isRepeat)}
                     className={`p-2 transition-colors ${isRepeat ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                    aria-label={isRepeat ? "Disable Repeat" : "Enable Repeat"}
                   >
                     <Repeat className="w-5 h-5" />
                   </button>

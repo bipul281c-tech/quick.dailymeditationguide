@@ -257,7 +257,9 @@ body {
 main {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem 1.5rem 5rem;
+  overflow-x: hidden;
+  padding: 0.5rem 1rem;
+  padding-bottom: 140px;
   z-index: 10;
   position: relative;
 }
@@ -705,33 +707,8 @@ input[type=range] {
 .meditation-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-  max-height: 220px;
-  min-height: 0;
-  padding-right: 4px;
-  padding-bottom: 8px;
-  margin-bottom: 16px;
-  scroll-behavior: smooth;
-}
-
-.meditation-list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.meditation-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 3px;
-}
-
-.meditation-list::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
-  border-radius: 3px;
-  transition: background 0.2s;
-}
-
-.meditation-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.2);
+  gap: 8px;
+  padding: 0;
 }
 
 /* Meditation List Header */
@@ -739,8 +716,7 @@ input[type=range] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 4px 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 0 4px 6px;
   margin-bottom: 4px;
 }
 
@@ -754,15 +730,11 @@ input[type=range] {
 
 /* Category Sections */
 .category-section {
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 12px;
+  background: transparent;
+  border-radius: 0;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  transition: all 0.3s ease;
-}
-
-.category-section:hover {
-  background: rgba(255, 255, 255, 0.55);
+  border: none;
+  margin-bottom: 0.5rem;
 }
 
 .category-header {
@@ -770,51 +742,56 @@ input[type=range] {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 10px 12px;
-  background: transparent;
-  border: none;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   cursor: pointer;
   transition: all 0.2s;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .category-header:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.category-header.expanded {
+  background: linear-gradient(135deg, rgba(163, 209, 160, 0.15), rgba(255, 255, 255, 0.9));
+  border-color: rgba(163, 209, 160, 0.3);
 }
 
 .category-header-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .category-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   transition: transform 0.2s;
 }
 
-.category-section:hover .category-icon {
-  transform: scale(1.1);
-}
-
 .category-title {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--stone-700);
+  color: var(--foreground);
   letter-spacing: -0.01em;
 }
 
 .category-count {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--stone-400);
-  background: rgba(0, 0, 0, 0.05);
-  padding: 2px 6px;
-  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: var(--celadon);
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-left: 6px;
 }
 
 .category-chevron {
@@ -829,60 +806,79 @@ input[type=range] {
 .category-content {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 0 8px 8px;
-  max-height: 500px;
-  overflow: hidden;
-  transition: all 0.3s ease;
+  gap: 2px;
+  padding: 0;
 }
 
 .category-content.collapsed {
-  max-height: 0;
-  padding: 0 8px;
-  opacity: 0;
+  display: none;
 }
 
 /* Category Colors */
 .category-indigo .category-icon {
-  background: var(--indigo-50);
-  color: var(--indigo-500);
+  background: linear-gradient(135deg, var(--indigo-100), var(--indigo-50));
+  color: var(--indigo-600);
+}
+
+.category-indigo .category-count {
+  background: var(--indigo-500);
 }
 
 .category-amber .category-icon {
-  background: var(--amber-50);
-  color: var(--amber-500);
+  background: linear-gradient(135deg, var(--amber-100), var(--amber-50));
+  color: var(--amber-600);
+}
+
+.category-amber .category-count {
+  background: var(--amber-500);
 }
 
 .category-teal .category-icon {
-  background: var(--teal-50);
-  color: var(--teal-500);
+  background: linear-gradient(135deg, var(--teal-100), var(--teal-50));
+  color: var(--teal-600);
+}
+
+.category-teal .category-count {
+  background: var(--teal-500);
 }
 
 .category-emerald .category-icon {
-  background: var(--emerald-50);
-  color: var(--emerald-500);
+  background: linear-gradient(135deg, var(--emerald-100), var(--emerald-50));
+  color: var(--emerald-600);
+}
+
+.category-emerald .category-count {
+  background: var(--emerald-500);
 }
 
 .category-rose .category-icon {
-  background: rgba(251, 113, 133, 0.1);
-  color: var(--rose-400);
+  background: linear-gradient(135deg, rgba(251, 113, 133, 0.2), rgba(251, 113, 133, 0.1));
+  color: var(--rose-500);
+}
+
+.category-rose .category-count {
+  background: var(--rose-400);
 }
 
 .category-stone .category-icon {
-  background: var(--stone-100);
-  color: var(--stone-500);
+  background: linear-gradient(135deg, var(--stone-200), var(--stone-100));
+  color: var(--stone-600);
+}
+
+.category-stone .category-count {
+  background: var(--stone-500);
 }
 
 /* Meditation Cards */
 .meditation-card {
   display: flex;
-  gap: 10px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.7);
+  gap: 12px;
+  padding: 10px 8px;
+  background: transparent;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid transparent;
+  border: none;
   animation: fadeInUp 0.3s ease forwards;
   opacity: 0;
   position: relative;
@@ -901,21 +897,19 @@ input[type=range] {
 }
 
 .meditation-card:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: var(--stone-200);
-  transform: translateX(2px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: rgba(163, 209, 160, 0.1);
 }
 
 .meditation-card.active {
-  border-color: var(--celadon);
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 0 2px rgba(163, 209, 160, 0.2);
+  background: rgba(163, 209, 160, 0.15);
+}
+
+.meditation-card.active .meditation-title {
+  color: var(--celadon-dark);
 }
 
 .meditation-card.featured {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(250, 250, 249, 0.95));
-  border-color: var(--amber-100);
+  background: transparent;
 }
 
 .meditation-card.featured::before {
@@ -924,7 +918,7 @@ input[type=range] {
   top: 6px;
   right: 6px;
   font-size: 10px;
-  color: var(--amber-500);
+  color: var(--celadon-dark);
 }
 
 /* Thumbnail with play indicator */
@@ -1181,50 +1175,63 @@ input[type=range] {
 }
 
 /* Breathing Exercise Styles */
+.breathing-modal {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.breathing-modal .modal-close {
+  top: 1rem;
+  right: 1rem;
+}
+
 .breathing-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1.5rem 0 1rem;
 }
 
 .breathing-circle {
-  width: 160px;
-  height: 160px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--celadon-light), var(--celadon));
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 4s ease-in-out;
-  box-shadow: 0 0 40px rgba(163, 209, 160, 0.4);
+  transition: transform 4s ease-in-out, box-shadow 4s ease-in-out;
+  box-shadow: 0 0 30px rgba(163, 209, 160, 0.3);
 }
 
 .breathing-circle.inhale {
-  transform: scale(1.3);
-  box-shadow: 0 0 60px rgba(163, 209, 160, 0.6);
+  transform: scale(1.25);
+  box-shadow: 0 0 50px rgba(163, 209, 160, 0.5);
 }
 
 .breathing-circle.exhale {
   transform: scale(1);
-  box-shadow: 0 0 30px rgba(163, 209, 160, 0.3);
+  box-shadow: 0 0 20px rgba(163, 209, 160, 0.2);
 }
 
 .breathing-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   color: var(--primary-foreground);
 }
 
 .breathing-text {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .breathing-count {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
+  line-height: 1;
   margin-top: 0.25rem;
 }
 
@@ -1237,33 +1244,55 @@ input[type=range] {
   width: 100%;
 }
 
+.breathing-controls .btn-primary {
+  width: 100%;
+  max-width: 200px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+}
+
 .breathing-options {
   display: flex;
   gap: 0.5rem;
-  flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
 }
 
 .breathing-option {
-  padding: 0.5rem 0.75rem;
+  flex: 1;
+  padding: 0.625rem 0.5rem;
   background: var(--muted);
   border: 1px solid var(--border);
-  border-radius: 2rem;
-  font-size: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
   font-weight: 500;
   color: var(--muted-foreground);
   cursor: pointer;
   transition: all 0.2s;
+  text-align: center;
 }
 
 .breathing-option:hover {
-  background: var(--celadon-light);
-  color: var(--primary-foreground);
+  background: rgba(163, 209, 160, 0.15);
+  border-color: var(--celadon);
+  color: var(--foreground);
 }
 
 .breathing-option.active {
   background: var(--celadon);
   color: var(--primary-foreground);
+  border-color: var(--celadon);
+}
+
+.pattern-time {
+  font-size: 0.65rem;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+.breathing-modal .modal-title {
+  text-align: center;
+  margin-bottom: 0.5rem;
   border-color: var(--celadon);
 }
 
@@ -1336,6 +1365,165 @@ input[type=range] {
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(163, 209, 160, 0.4);
+}
+
+/* ============================================
+   MINI PLAYER (Floating Bottom Player)
+   ============================================ */
+
+.mini-player {
+  position: absolute;
+  bottom: 64px;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.mini-player.hidden {
+  display: none;
+}
+
+.mini-player-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+.mini-player-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-player-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, var(--celadon-light), var(--celadon));
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-foreground);
+  flex-shrink: 0;
+}
+
+.mini-player-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mini-player-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-player-time {
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.mini-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mini-play-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, var(--celadon), var(--celadon-dark));
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s;
+  box-shadow: 0 2px 8px rgba(163, 209, 160, 0.4);
+}
+
+.mini-play-btn:hover {
+  transform: scale(1.08);
+}
+
+.mini-play-btn:active {
+  transform: scale(0.95);
+}
+
+.mini-play-btn svg {
+  margin-left: 2px;
+}
+
+.mini-close-btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mini-close-btn:hover {
+  background: var(--border);
+  color: var(--foreground);
+}
+
+.mini-close-btn:active {
+  transform: scale(0.95);
+}
+
+.mini-player-progress-wrapper {
+  position: relative;
+  height: 16px;
+  cursor: pointer;
+}
+
+.mini-player-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--border);
+}
+
+.mini-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--celadon), var(--celadon-dark));
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.mini-progress-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
 }
 
 /* Empty State */

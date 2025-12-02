@@ -1,4 +1,4 @@
-// Breathe - Guided Meditation Chrome Extension
+// Daily Meditation Guide - Chrome Extension
 // API Integration, Breathing Exercises, Ambient Sounds
 
 // Default API configuration
@@ -57,7 +57,10 @@ const elements = {
   meditateBtn: null,
   breathingModal: null,
   soundsModal: null,
-  greeting: null
+  greeting: null,
+  // Mini player
+  miniPlayer: null,
+  closePlayerBtn: null
 };
 
 // Initialize the extension
@@ -96,6 +99,10 @@ function initializeElements() {
   elements.breathingModal = document.getElementById('breathing-modal');
   elements.soundsModal = document.getElementById('sounds-modal');
   elements.greeting = document.getElementById('greeting');
+
+  // Mini player
+  elements.miniPlayer = document.getElementById('mini-player');
+  elements.closePlayerBtn = document.getElementById('close-player-btn');
 }
 
 // Update greeting based on time of day
@@ -133,15 +140,36 @@ function setupEventListeners() {
     });
   }
 
-  // Audio Player
-  elements.playPauseBtn.addEventListener('click', togglePlayPause);
-  elements.progressBar.addEventListener('input', handleSeek);
+  // Audio Player - use event delegation for mini player buttons
+  const miniPlayer = document.getElementById('mini-player');
+  if (miniPlayer) {
+    miniPlayer.addEventListener('click', (e) => {
+      const playPauseBtn = e.target.closest('#play-pause-btn');
+      const closeBtn = e.target.closest('#close-player-btn');
+
+      if (playPauseBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePlayPause();
+      } else if (closeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        closePlayer();
+      }
+    });
+  }
+
+  if (elements.progressBar) {
+    elements.progressBar.addEventListener('input', handleSeek);
+  }
 
   // Audio events
-  elements.audioElement.addEventListener('timeupdate', updateProgress);
-  elements.audioElement.addEventListener('ended', handleAudioEnded);
-  elements.audioElement.addEventListener('loadedmetadata', updateDuration);
-  elements.audioElement.addEventListener('error', handleAudioError);
+  if (elements.audioElement) {
+    elements.audioElement.addEventListener('timeupdate', updateProgress);
+    elements.audioElement.addEventListener('ended', handleAudioEnded);
+    elements.audioElement.addEventListener('loadedmetadata', updateDuration);
+    elements.audioElement.addEventListener('error', handleAudioError);
+  }
 
   // Quick action buttons
   if (elements.breathingBtn) {
@@ -279,31 +307,18 @@ function handleSearch() {
   fetchMeditations(query);
 }
 
-// Group meditations by category
+// Group meditations by their first keyword
 function groupMeditationsByCategory(meditationList) {
   const groups = {};
-  const categoryOrder = ['Featured', 'Sleep', 'Focus', 'Calm', 'Anxiety', 'Stress', 'Nature', 'Other'];
 
   meditationList.forEach(meditation => {
-    // Determine category from keywords or title
-    let category = 'Other';
     const keywords = meditation.keywords || [];
-    const titleLower = meditation.title.toLowerCase();
-    const descLower = meditation.description.toLowerCase();
 
-    // Check for specific categories
-    if (keywords.some(k => k.toLowerCase().includes('sleep')) || titleLower.includes('sleep')) {
-      category = 'Sleep';
-    } else if (keywords.some(k => k.toLowerCase().includes('focus')) || titleLower.includes('focus')) {
-      category = 'Focus';
-    } else if (keywords.some(k => k.toLowerCase().includes('calm')) || titleLower.includes('calm') || titleLower.includes('relax')) {
-      category = 'Calm';
-    } else if (keywords.some(k => k.toLowerCase().includes('anxiety')) || titleLower.includes('anxiety')) {
-      category = 'Anxiety';
-    } else if (keywords.some(k => k.toLowerCase().includes('stress')) || titleLower.includes('stress')) {
-      category = 'Stress';
-    } else if (keywords.some(k => k.toLowerCase().includes('nature')) || titleLower.includes('nature') || titleLower.includes('forest') || titleLower.includes('ocean')) {
-      category = 'Nature';
+    // Use the first keyword as the category, or 'Other' if no keywords
+    let category = 'Other';
+    if (keywords.length > 0) {
+      // Capitalize first letter of the keyword
+      category = keywords[0].charAt(0).toUpperCase() + keywords[0].slice(1).toLowerCase();
     }
 
     if (!groups[category]) {
@@ -312,52 +327,40 @@ function groupMeditationsByCategory(meditationList) {
     groups[category].push(meditation);
   });
 
-  // Sort groups by predefined order
-  const sortedGroups = {};
-  categoryOrder.forEach(cat => {
-    if (groups[cat] && groups[cat].length > 0) {
-      sortedGroups[cat] = groups[cat];
-    }
+  // Sort groups alphabetically, but put 'Other' at the end
+  const sortedKeys = Object.keys(groups).sort((a, b) => {
+    if (a === 'Other') return 1;
+    if (b === 'Other') return -1;
+    return a.localeCompare(b);
   });
 
-  // Add any remaining categories
-  Object.keys(groups).forEach(cat => {
-    if (!sortedGroups[cat] && groups[cat].length > 0) {
-      sortedGroups[cat] = groups[cat];
-    }
+  const sortedGroups = {};
+  sortedKeys.forEach(key => {
+    sortedGroups[key] = groups[key];
   });
 
   return sortedGroups;
 }
 
-// Get category icon SVG
+// Get category icon SVG - default meditation icon for all categories
 function getCategoryIcon(category) {
-  const icons = {
-    'Featured': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
-    'Sleep': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>',
-    'Focus': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2m-10-10h2m16 0h2"></path></svg>',
-    'Calm': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2m7.6-7.4A2 2 0 1 1 11 8H2m10.6 11.4A2 2 0 1 1 14 16H2"></path></svg>',
-    'Anxiety': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>',
-    'Stress': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 15h8M9 9h.01M15 9h.01"></path></svg>',
-    'Nature': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 14 4-9 4 9M6 14h4m-4 8 6-10 6 10"></path></svg>',
-    'Other': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l2 2"></path></svg>'
-  };
-  return icons[category] || icons['Other'];
+  // Default icon - lotus/meditation symbol
+  return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l2 2"></path></svg>';
 }
 
-// Get category color class
+// Get category color class - cycle through colors
 function getCategoryColorClass(category) {
-  const colors = {
-    'Featured': 'category-amber',
-    'Sleep': 'category-indigo',
-    'Focus': 'category-amber',
-    'Calm': 'category-teal',
-    'Anxiety': 'category-rose',
-    'Stress': 'category-rose',
-    'Nature': 'category-emerald',
-    'Other': 'category-stone'
-  };
-  return colors[category] || 'category-stone';
+  // Generate a consistent color based on the category name
+  const colors = ['category-teal', 'category-indigo', 'category-amber', 'category-emerald', 'category-rose'];
+
+  // Simple hash of category name to pick a color
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  const index = Math.abs(hash) % colors.length;
+  return colors[index];
 }
 
 // Render meditation list
@@ -472,7 +475,11 @@ function playMeditation(meditation) {
 
   // Update UI
   elements.playerTitle.textContent = meditation.title;
-  elements.playerTime.textContent = 'Visualization • 10 min';
+
+  // Show mini player
+  if (elements.miniPlayer) {
+    elements.miniPlayer.classList.remove('hidden');
+  }
 
   // Update active state in list
   document.querySelectorAll('.meditation-card').forEach(card => {
@@ -494,21 +501,48 @@ function playMeditation(meditation) {
     });
 }
 
+// Close player
+function closePlayer() {
+  if (elements.audioElement) {
+    elements.audioElement.pause();
+    elements.audioElement.currentTime = 0;
+  }
+
+  isPlaying = false;
+  currentMeditation = null;
+
+  if (elements.miniPlayer) {
+    elements.miniPlayer.classList.add('hidden');
+  }
+
+  if (elements.playIconSVG) {
+    elements.playIconSVG.style.display = 'block';
+  }
+  if (elements.pauseIconSVG) {
+    elements.pauseIconSVG.style.display = 'none';
+  }
+
+  // Remove active state from cards
+  document.querySelectorAll('.meditation-card').forEach(card => {
+    card.classList.remove('active');
+  });
+}
+
 // Toggle play/pause
 function togglePlayPause() {
-  if (!currentMeditation) return;
+  if (!currentMeditation || !elements.audioElement) return;
 
   if (isPlaying) {
     elements.audioElement.pause();
     isPlaying = false;
-    elements.playIconSVG.style.display = 'block';
-    elements.pauseIconSVG.style.display = 'none';
+    if (elements.playIconSVG) elements.playIconSVG.style.display = 'block';
+    if (elements.pauseIconSVG) elements.pauseIconSVG.style.display = 'none';
   } else {
     elements.audioElement.play()
       .then(() => {
         isPlaying = true;
-        elements.playIconSVG.style.display = 'none';
-        elements.pauseIconSVG.style.display = 'block';
+        if (elements.playIconSVG) elements.playIconSVG.style.display = 'none';
+        if (elements.pauseIconSVG) elements.pauseIconSVG.style.display = 'block';
       })
       .catch(console.error);
   }
@@ -527,22 +561,23 @@ function updateProgress() {
   const progress = (elements.audioElement.currentTime / elements.audioElement.duration) * 100;
   elements.progressBar.value = isNaN(progress) ? 0 : progress;
 
-  // Update progress bar fill and knob
+  // Update progress bar fill
   const progressBar = document.getElementById('progressBar');
-  const progressKnob = document.getElementById('progressKnob');
-  if (progressBar) progressBar.style.width = `${progress}%`;
-  if (progressKnob) progressKnob.style.left = `${progress}%`;
+  if (progressBar) progressBar.style.width = `${isNaN(progress) ? 0 : progress}%`;
 
-  // Update time display
-  if (elements.currentTimeEl) {
-    elements.currentTimeEl.textContent = formatTime(elements.audioElement.currentTime);
+  // Update time display in mini player
+  if (elements.playerTime) {
+    const current = formatTime(elements.audioElement.currentTime);
+    const total = formatTime(elements.audioElement.duration);
+    elements.playerTime.textContent = `${current} / ${total}`;
   }
 }
 
 // Update duration display
 function updateDuration() {
-  if (elements.totalTimeEl) {
-    elements.totalTimeEl.textContent = formatTime(elements.audioElement.duration);
+  if (elements.playerTime && elements.audioElement.duration) {
+    const total = formatTime(elements.audioElement.duration);
+    elements.playerTime.textContent = `0:00 / ${total}`;
   }
 }
 

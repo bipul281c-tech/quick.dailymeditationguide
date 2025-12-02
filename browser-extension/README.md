@@ -1,4 +1,4 @@
-# Breathe - Guided Meditation Browser Extension
+# Daily Meditation Guide - Browser Extension
 
 A beautiful browser extension for mindful breaks. Access guided meditations, breathing exercises, and ambient sounds right from your browser toolbar.
 
