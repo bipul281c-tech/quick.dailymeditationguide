@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { Search, Menu, X } from "lucide-react"
 import { UserMenu } from "@/components/auth/user-menu"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -47,6 +48,7 @@ export function Navigation() {
           <button className="text-muted-foreground hover:text-foreground transition-colors p-2">
             <Search className="w-5 h-5" />
           </button>
+          <ModeToggle />
           <UserMenu />
           {/* Mobile Menu Button */}
           <button
@@ -60,22 +62,24 @@ export function Navigation() {
       </div>
 
       {/* Mobile Menu Dropdown */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
-          <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-3">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.label}
-              </a>
-            ))}
+      {
+        mobileMenuOpen && (
+          <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
+            <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-3">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </nav>
+        )
+      }
+    </nav >
   )
 }

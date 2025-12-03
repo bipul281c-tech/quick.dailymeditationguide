@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/auth-context"
+import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
@@ -113,11 +114,18 @@ export default function RootLayout({
         <style>
           {`@import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Playwrite+DE+Grund:wght@100..400&display=swap');`}
         </style>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-        <Toaster />
-        <Analytics />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+          <Toaster />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   )
