@@ -20,12 +20,6 @@ export async function generateStaticParams() {
   }))
 }
 
-// Allow dynamic params for meditations not in generateStaticParams
-export const dynamicParams = true
-
-// Enable ISR (Incremental Static Regeneration) - revalidate every hour
-export const revalidate = 3600
-
 // Helper to extract duration from title (e.g., "10 Minute" -> "PT10M")
 function extractDuration(title: string): string {
   const match = title.match(/(\d+)\s*minute/i)

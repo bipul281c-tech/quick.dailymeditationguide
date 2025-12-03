@@ -59,3 +59,37 @@ export function searchMeditations(query: string): MeditationWithId[] {
       (meditation.keywords && meditation.keywords.some((keyword) => keyword.toLowerCase().includes(lowerQuery))),
   )
 }
+
+// Get related meditations based on keywords
+export function getRelatedMeditations(meditation: MeditationWithId, limit: number = 3): MeditationWithId[] {
+  const allMeditations = getAllMeditations()
+
+  if (!meditation.keywords || meditation.keywords.length === 0) {
+    // If no keywords, just return random ones (excluding current)
+    return allMeditations
+      .filter(m => m.id !== meditation.id)
+      .slice(0, limit)
+  }
+
+  const related = allMeditations
+    .filter(m => m.id !== meditation.id)
+    .map(m => {
+      // Calculate relevance score based on matching keywords
+      const matchingKeywords = m.keywords?.filter(k =>
+        meditation.keywords?.some(mk => mk.toLowerCase() === k.toLowerCase())
+      ).length || 0
+      return { meditation: m, score: matchingKeywords }
+    })
+    .sort((a, b) => b.score - a.score) // Sort by score descending
+    .slice(0, limit)
+    .map(item => item.meditation)
+
+  // If we don't have enough related ones, fill with others
+  if (related.length < limit) {
+    const existingIds = new Set([meditation.id, ...related.map(m => m.id)])
+    const remaining = allMeditations.filter(m => !existingIds.has(m.id))
+    return [...related, ...remaining.slice(0, limit - related.length)]
+  }
+
+  return related
+}
