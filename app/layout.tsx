@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.quick.dailymeditationguide.com"),
   alternates: {
     canonical: "/",
+    types: {
+      "application/rss+xml": [
+        { url: "/feed.xml", title: "Daily Meditation Guide RSS Feed" },
+      ],
+    },
   },
   openGraph: {
     title: "Daily Meditation Guide | Guided Meditation & Sleep Stories",
@@ -87,6 +92,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "6i0ECTV7zHVRPDhVgk9P21_V-O_nTyq0hPJ6uIT4Q5Q",
+    other: {
+      "p:domain_verify": "94ff2d85419b649a79ce54d052843491",
+    },
   },
 }
 
