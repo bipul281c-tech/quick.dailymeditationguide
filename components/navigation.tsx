@@ -6,7 +6,7 @@ import { UserMenu } from "@/components/auth/user-menu"
 
 export function Navigation() {
   return (
-    <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-background/70 border-b border-border transition-all duration-300">
+    <nav className="fixed top-0 w-full z-50 backdrop-blur-md bg-background/70 border-b border-border transition-colors duration-300" style={{ paddingRight: 'var(--removed-body-scroll-bar-size, 0px)' }}>
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="#" className="flex items-center gap-3 group">
           <Image

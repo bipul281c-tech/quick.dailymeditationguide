@@ -60,11 +60,10 @@ export function TrackList({ meditations, currentTrackIndex, isPlaying, onTrackSe
           return (
             <div
               key={index}
-              className={`group flex items-center p-4 border rounded-xl transition-all duration-200 cursor-pointer overflow-hidden ${
-                isCurrentTrack
+              className={`group flex items-center p-4 border rounded-xl transition-all duration-200 cursor-pointer overflow-hidden ${isCurrentTrack
                   ? "bg-card border-celadon shadow-sm"
                   : "bg-card/40 border-border/60 hover:bg-card hover:border-border hover:shadow-sm"
-              }`}
+                }`}
               onClick={() => onTrackSelect(index)}
             >
               <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 mr-3">
@@ -75,9 +74,8 @@ export function TrackList({ meditations, currentTrackIndex, isPlaying, onTrackSe
                 />
               </div>
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors shrink-0 ${
-                  isCurrentTrack ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:text-foreground"
-                }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors shrink-0 ${isCurrentTrack ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground group-hover:text-foreground"
+                  }`}
               >
                 {isCurrentTrack && isPlaying ? (
                   <Pause className="w-4 h-4 fill-current" />
