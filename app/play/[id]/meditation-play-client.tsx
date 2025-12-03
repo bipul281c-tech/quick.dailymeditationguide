@@ -229,6 +229,22 @@ export function MeditationPlayClient({ meditation, relatedMeditations = [] }: Me
               </div>
             )}
           </div>
+
+          {/* Eye-catching Live Animation Badge - Moved outside overflow-hidden container */}
+          {!isPlaying && (
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-40 w-max pointer-events-none">
+              <div className="animate-bounce duration-[2000ms]">
+                <div className="bg-gradient-to-r from-[var(--celadon-dark)] via-[var(--celadon)] to-[var(--celadon-2)] text-white text-[10px] md:text-xs font-bold px-4 py-1.5 rounded-full shadow-xl border border-white/30 flex items-center gap-2 backdrop-blur-md ring-2 ring-white/20">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                  </span>
+                  <span className="whitespace-nowrap drop-shadow-md tracking-wide">Play the Audio You won't Regret</span>
+                </div>
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[var(--celadon)] rotate-45"></div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Track info - compact for mobile */}
