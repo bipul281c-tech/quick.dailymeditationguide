@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, LogOut, Heart, History, Settings } from "lucide-react"
+import { User, LogOut, Heart, History, Settings, BarChart3, Star } from "lucide-react"
 
 export function UserMenu() {
   const { user, profile, loading, signOut } = useAuth()
@@ -93,7 +93,19 @@ export function UserMenu() {
         <DropdownMenuItem asChild className="cursor-pointer">
           <Link href="/favorites">
             <Heart className="mr-2 h-4 w-4" />
-            <span>Favorites</span>
+            <span>My Favorites</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/most-played">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            <span>Most Played</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/most-favorited">
+            <Star className="mr-2 h-4 w-4" />
+            <span>Most Favorited</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer">

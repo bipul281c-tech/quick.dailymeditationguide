@@ -124,6 +124,8 @@ export function useMeditationTracking() {
     if (!user) return null
 
     const supabase = createClient()
+
+    // Record play in user's listening history
     const { data, error } = await supabase
       .from("listening_history")
       .insert({
@@ -135,6 +137,9 @@ export function useMeditationTracking() {
       })
       .select()
       .single()
+
+    // Increment global play count for this meditation
+    await supabase.rpc("increment_play_count", { p_meditation_id: meditationId })
 
     if (!error && data) {
       currentHistoryIdRef.current = data.id

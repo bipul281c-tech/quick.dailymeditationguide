@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { Navigation } from "@/components/navigation"
 import { HeroSection } from "@/components/hero-section"
 import { Footer } from "@/components/footer"
@@ -5,6 +6,15 @@ import { AmbientBackground } from "@/components/ambient-background"
 import { MeditationPlayer } from "@/components/meditation-player"
 import { ExtensionPromo } from "@/components/extension-promo"
 import { getAllMeditations } from "@/lib/meditations"
+import { Spinner } from "@/components/ui/spinner"
+
+function PlayerLoading() {
+  return (
+    <div className="max-w-4xl mx-auto w-full flex items-center justify-center py-20">
+      <Spinner className="w-10 h-10 text-primary" />
+    </div>
+  )
+}
 
 export default function Home() {
   // Fetch meditations with stable IDs from the data layer
@@ -41,7 +51,18 @@ export default function Home() {
 
       <main className="pt-32 pb-24 px-6 relative max-w-6xl mx-auto min-h-screen flex flex-col justify-center">
         <HeroSection />
-        <MeditationPlayer meditations={meditations} />
+        <Suspense fallback={<PlayerLoading />}>
+          <MeditationPlayer meditations={meditations} />
+        </Suspense>
+
+        <div className="mt-12 text-center">
+          <a
+            href="/library"
+            className="inline-flex items-center justify-center px-8 py-3 text-sm font-medium transition-colors bg-primary text-primary-foreground hover:bg-primary/90 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 duration-200"
+          >
+            View Full Library
+          </a>
+        </div>
       </main>
 
       {/* Extension Promotion Section */}

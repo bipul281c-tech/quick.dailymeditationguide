@@ -12,7 +12,7 @@ import { AmbientBackground } from "@/components/ambient-background"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Spinner } from "@/components/ui/spinner"
 import type { MeditationWithId } from "@/types/meditation"
 import type { MeditationFavorite } from "@/types/supabase"
 
@@ -99,19 +99,10 @@ export default function FavoritesPage() {
     }
   }
 
-  // Render loading skeleton
+  // Render loading state
   const renderLoadingState = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Card key={i} className="overflow-hidden">
-          <Skeleton className="aspect-video w-full" />
-          <CardContent className="p-4">
-            <Skeleton className="h-5 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-full mb-1" />
-            <Skeleton className="h-4 w-2/3" />
-          </CardContent>
-        </Card>
-      ))}
+    <div className="flex items-center justify-center py-20">
+      <Spinner className="w-10 h-10 text-primary" />
     </div>
   )
 

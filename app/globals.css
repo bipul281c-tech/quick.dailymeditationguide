@@ -96,8 +96,9 @@
 }
 
 @theme inline {
-  /* Added Inter font for meditation theme */
-  --font-sans: "Inter", "Inter Fallback", system-ui, sans-serif;
+  /* Added Funnel Sans for meditation theme */
+  --font-sans: "Funnel Sans", sans-serif;
+  --font-playwrite: "Playwrite DE Grund", cursive;
   --font-serif: Georgia, "Times New Roman", serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback";
 
@@ -153,10 +154,14 @@
     @apply border-border outline-ring/50;
   }
 
-  html {}
+  html {
+    font-family: "Funnel Sans", sans-serif;
+  }
 
   body {
     @apply bg-background text-foreground;
+    font-family: "Funnel Sans", sans-serif;
+    font-optical-sizing: auto;
   }
 }
 
@@ -289,4 +294,35 @@ input[type="range"].audio-slider::-moz-range-track {
 
 .delay-300 {
   animation-delay: 0.3s;
+}
+
+/* Audio Bars Animation */
+.bar {
+  animation: sound 0ms -800ms linear infinite alternate;
+  height: 100%;
+}
+
+@keyframes sound {
+  0% {
+    opacity: .35;
+    height: 3px;
+  }
+
+  100% {
+    opacity: 1;
+    height: 100%;
+  }
+}
+
+/* Google Fonts Classes */
+.funnel-sans {
+  font-family: "Funnel Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.playwrite-de-grund {
+  font-family: "Playwrite DE Grund", cursive;
+  font-optical-sizing: auto;
+  font-style: normal;
 }

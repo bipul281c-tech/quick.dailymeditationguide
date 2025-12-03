@@ -14,7 +14,7 @@ export function HeroSection() {
       </span>
 
       <h1 className="text-5xl md:text-7xl font-medium tracking-tight text-foreground mb-6 blur-reveal delay-100 text-balance">
-        Find your <span className="text-celadon-dark italic font-serif">center</span>.
+        Daily Meditation <span className="text-celadon-dark italic font-serif">Guide</span>.
       </h1>
 
       <p className="text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed mb-10 blur-reveal delay-200 text-pretty">

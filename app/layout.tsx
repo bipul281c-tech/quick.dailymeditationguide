@@ -1,12 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
-
-const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
@@ -14,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | Daily Meditation Guide",
   },
   description:
-    "Immersive audio landscapes, guided meditations, and sleep stories designed to help you focus, breathe, and restore balance to your day. Find your center with Daily Meditation Guide.",
+    "Immersive audio landscapes, guided meditations, and sleep stories designed to help you focus, breathe, and restore balance to your day. Daily Meditation Guide.",
   applicationName: "Daily Meditation Guide",
   authors: [{ name: "Daily Meditation Guide Team" }],
   generator: "v0.app",
@@ -101,7 +98,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+      <body className="antialiased" suppressHydrationWarning>
+        <style>
+          {`@import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Playwrite+DE+Grund:wght@100..400&display=swap');`}
+        </style>
         <AuthProvider>
           {children}
         </AuthProvider>

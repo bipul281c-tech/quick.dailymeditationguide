@@ -4,14 +4,13 @@ import { Play, Pause, MoreHorizontal, Heart, Star } from "lucide-react"
 import type { MeditationWithId } from "@/types/meditation"
 import { useMeditationTracking } from "@/hooks/use-meditation-tracking"
 import { useAuth } from "@/contexts/auth-context"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Spinner } from "@/components/ui/spinner"
 
-// Skeleton for track action buttons
-function TrackActionsSkeleton() {
+// Loading indicator for track action buttons
+function TrackActionsLoading() {
   return (
     <div className="flex items-center gap-2">
-      <Skeleton className="w-4 h-4 rounded-full" />
-      <Skeleton className="w-4 h-4 rounded-full" />
+      <Spinner className="w-4 h-4 text-muted-foreground" />
     </div>
   )
 }
@@ -27,8 +26,8 @@ export function TrackList({ meditations, currentTrackIndex, isPlaying, onTrackSe
   const { initializing: authInitializing } = useAuth()
   const { isLiked, isFavorited, toggleLike, toggleFavorite, isAuthenticated, loading: trackingLoading } = useMeditationTracking()
 
-  // Show skeleton while auth is initializing or tracking data is loading
-  const showActionSkeleton = authInitializing || (isAuthenticated && trackingLoading)
+  // Show loading indicator while auth is initializing or tracking data is loading
+  const showActionLoading = authInitializing || (isAuthenticated && trackingLoading)
 
   // Use actual meditation ID instead of array index
   const handleLikeClick = async (e: React.MouseEvent, meditationId: number) => {
@@ -61,8 +60,8 @@ export function TrackList({ meditations, currentTrackIndex, isPlaying, onTrackSe
             <div
               key={index}
               className={`group flex items-center p-4 border rounded-xl transition-all duration-200 cursor-pointer overflow-hidden ${isCurrentTrack
-                  ? "bg-card border-celadon shadow-sm"
-                  : "bg-card/40 border-border/60 hover:bg-card hover:border-border hover:shadow-sm"
+                ? "bg-card border-celadon shadow-sm"
+                : "bg-card/40 border-border/60 hover:bg-card hover:border-border hover:shadow-sm"
                 }`}
               onClick={() => onTrackSelect(index)}
             >
@@ -100,9 +99,9 @@ export function TrackList({ meditations, currentTrackIndex, isPlaying, onTrackSe
                 )}
               </div>
               <div className="ml-4 flex items-center gap-2 shrink-0">
-                {/* Show skeleton during auth/tracking initialization */}
-                {showActionSkeleton ? (
-                  <TrackActionsSkeleton />
+                {/* Show loading indicator during auth/tracking initialization */}
+                {showActionLoading ? (
+                  <TrackActionsLoading />
                 ) : isAuthenticated ? (
                   <>
                     <button

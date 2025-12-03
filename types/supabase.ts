@@ -101,6 +101,26 @@ export interface Database {
           completed?: boolean
         }
       }
+      meditation_play_counts: {
+        Row: {
+          meditation_id: number
+          play_count: number
+          last_played_at: string
+          created_at: string
+        }
+        Insert: {
+          meditation_id: number
+          play_count?: number
+          last_played_at?: string
+          created_at?: string
+        }
+        Update: {
+          meditation_id?: number
+          play_count?: number
+          last_played_at?: string
+          created_at?: string
+        }
+      }
       user_preferences: {
         Row: {
           id: string
@@ -135,10 +155,18 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      meditation_favorites_count: {
+        Row: {
+          meditation_id: number
+          favorites_count: number
+        }
+      }
     }
     Functions: {
-      [_ in never]: never
+      increment_play_count: {
+        Args: { p_meditation_id: number }
+        Returns: void
+      }
     }
     Enums: {
       [_ in never]: never
@@ -151,4 +179,6 @@ export type MeditationLike = Database["public"]["Tables"]["meditation_likes"]["R
 export type MeditationFavorite = Database["public"]["Tables"]["meditation_favorites"]["Row"]
 export type ListeningHistory = Database["public"]["Tables"]["listening_history"]["Row"]
 export type UserPreferences = Database["public"]["Tables"]["user_preferences"]["Row"]
+export type MeditationPlayCount = Database["public"]["Tables"]["meditation_play_counts"]["Row"]
+export type MeditationFavoritesCount = Database["public"]["Views"]["meditation_favorites_count"]["Row"]
 

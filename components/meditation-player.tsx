@@ -9,14 +9,13 @@ import type { MeditationWithId } from "@/types/meditation"
 import { useMeditationTracking } from "@/hooks/use-meditation-tracking"
 import { useAuth } from "@/contexts/auth-context"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Spinner } from "@/components/ui/spinner"
 
-// Skeleton for like/favorite buttons during auth loading
-function ActionButtonsSkeleton() {
+// Loading indicator for like/favorite buttons during auth loading
+function ActionButtonsLoading() {
   return (
     <div className="flex items-center gap-2">
-      <Skeleton className="w-5 h-5 rounded-full" />
-      <Skeleton className="w-5 h-5 rounded-full" />
+      <Spinner className="w-5 h-5 text-muted-foreground" />
     </div>
   )
 }
@@ -24,6 +23,8 @@ function ActionButtonsSkeleton() {
 interface MeditationPlayerProps {
   meditations: MeditationWithId[]
 }
+
+import { useSearchParams, useRouter } from "next/navigation"
 
 export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -35,6 +36,9 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
   const [hasRecordedPlay, setHasRecordedPlay] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
   const progressUpdateIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  const searchParams = useSearchParams()
+  const router = useRouter()
 
   const { user, initializing: authInitializing } = useAuth()
   const {
@@ -48,14 +52,38 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
     loading: trackingLoading
   } = useMeditationTracking()
 
-  // Show skeleton while auth is initializing (but tracking data is loading)
-  const showActionSkeleton = authInitializing || (isAuthenticated && trackingLoading)
+  // Show loading indicator while auth is initializing (but tracking data is loading)
+  const showActionLoading = authInitializing || (isAuthenticated && trackingLoading)
 
   const currentTrack = meditations[currentTrackIndex]
   // Use the actual meditation ID for like/favorite checks, not the array index
   const currentMeditationId = currentTrack?.id
   const currentIsLiked = isLiked(currentMeditationId)
   const currentIsFavorited = isFavorited(currentMeditationId)
+
+  // Handle playId from URL
+  useEffect(() => {
+    const playId = searchParams.get("playId")
+    if (playId) {
+      const trackId = parseInt(playId)
+      const index = meditations.findIndex(m => m.id === trackId)
+
+      if (index !== -1) {
+        setCurrentTrackIndex(index)
+        setIsPlaying(true)
+        // Wait for audio ref to be ready then play
+        setTimeout(() => {
+          if (audioRef.current) {
+            audioRef.current.play().catch(console.error)
+          }
+        }, 500)
+
+        // Clear the param without refreshing
+        const newUrl = window.location.pathname
+        window.history.replaceState({}, '', newUrl)
+      }
+    }
+  }, [searchParams, meditations])
 
   // Reset hasRecordedPlay when track changes
   useEffect(() => {
@@ -236,9 +264,9 @@ export function MeditationPlayer({ meditations }: MeditationPlayerProps) {
               <div>
                 <div className="flex items-start justify-between mb-2">
                   <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">Now Playing</span>
-                  {/* Show skeleton during auth/tracking initialization to prevent layout shift */}
-                  {showActionSkeleton ? (
-                    <ActionButtonsSkeleton />
+                  {/* Show loading indicator during auth/tracking initialization to prevent layout shift */}
+                  {showActionLoading ? (
+                    <ActionButtonsLoading />
                   ) : (
                     <div className="flex items-center gap-2">
                       <TooltipProvider>
