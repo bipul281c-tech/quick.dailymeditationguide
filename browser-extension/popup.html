@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Meditation Guide</title>
+    <link rel="stylesheet" href="popup.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Playwrite+DE+Grund:wght@100..400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="ext-container">
+
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+
+        <header class="header">
+            <div class="flex items-center gap-2.5">
+                <div class="icon-box">
+                    <img src="icons/icon.svg" alt="Daily Meditation Guide Logo">
+                </div>
+                <span class="brand-text">Daily Meditation Guide</span>
+            </div>
+            <button id="profile-btn" class="profile-btn" aria-label="User Profile">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </button>
+        </header>
+
+        <main>
+
+            <!-- Profile Modal -->
+            <div id="profile-modal" class="modal hidden">
+                <div class="modal-content profile-modal">
+                    <button class="modal-close" id="close-profile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h3 class="modal-title">Account</h3>
+
+                    <!-- Auth Loading -->
+                    <div id="auth-loading" class="auth-state hidden">
+                        <div class="spinner"></div>
+                        <p>Checking session...</p>
+                    </div>
+
+                    <!-- Logged Out State -->
+                    <div id="auth-logged-out" class="auth-state">
+                        <p class="auth-description">Sign in to sync your progress across devices.</p>
+                        <form id="login-form" class="auth-form">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" placeholder="your@email.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" id="password" placeholder="••••••••" required>
+                            </div>
+                            <div id="auth-error" class="auth-error hidden"></div>
+                            <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+                        </form>
+                    </div>
+
+                    <!-- Logged In State -->
+                    <div id="auth-logged-in" class="auth-state hidden">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div class="user-details">
+                                <p class="user-email" id="user-email"></p>
+                                <p class="user-status">Signed in</p>
+                            </div>
+                        </div>
+                        <button id="sign-out-btn" class="btn btn-outline btn-full">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breathing Exercise Modal -->
+            <div id="breathing-modal" class="modal hidden">
+                <div class="modal-content breathing-modal">
+                    <button class="modal-close" id="close-breathing">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h3 class="modal-title">Breathing Exercise</h3>
+                    <div class="breathing-container">
+                        <div class="breathing-circle" id="breathing-circle">
+                            <div class="breathing-inner">
+                                <span class="breathing-text" id="breathing-text">Ready</span>
+                                <span class="breathing-count" id="breathing-count"></span>
+                            </div>
+                        </div>
+                        <div class="breathing-controls">
+                            <div class="breathing-options">
+                                <button class="breathing-option active" data-pattern="relaxed">Relaxed<br><span
+                                        class="pattern-time">4-4-4</span></button>
+                                <button class="breathing-option" data-pattern="calm">Calm<br><span
+                                        class="pattern-time">4-7-8</span></button>
+                                <button class="breathing-option" data-pattern="energize">Energize<br><span
+                                        class="pattern-time">4-4-2</span></button>
+                            </div>
+                            <button class="btn btn-primary" id="start-breathing">Start</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ambient Sounds Modal -->
+            <div id="sounds-modal" class="modal hidden">
+                <div class="modal-content sounds-modal">
+                    <button class="modal-close" id="close-sounds">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h3 class="modal-title">Ambient Sounds</h3>
+                    <div class="sounds-grid">
+                        <button class="sound-btn" data-sound="rain">
+                            <span class="sound-emoji">🌧️</span>
+                            <span class="sound-label">Rain</span>
+                        </button>
+                        <button class="sound-btn" data-sound="ocean">
+                            <span class="sound-emoji">🌊</span>
+                            <span class="sound-label">Ocean</span>
+                        </button>
+                        <button class="sound-btn" data-sound="forest">
+                            <span class="sound-emoji">🌲</span>
+                            <span class="sound-label">Forest</span>
+                        </button>
+                        <button class="sound-btn" data-sound="fire">
+                            <span class="sound-emoji">🔥</span>
+                            <span class="sound-label">Fireplace</span>
+                        </button>
+                        <button class="sound-btn" data-sound="birds">
+                            <span class="sound-emoji">🐦</span>
+                            <span class="sound-label">Birds</span>
+                        </button>
+                        <button class="sound-btn" data-sound="wind">
+                            <span class="sound-emoji">💨</span>
+                            <span class="sound-label">Wind</span>
+                        </button>
+                    </div>
+                    <div class="volume-control">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                        <input type="range" id="ambient-volume" min="0" max="100" value="50" class="volume-slider">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search meditations..." autocomplete="off">
+                <button id="search-btn" class="btn btn-primary">Search</button>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Loading meditations...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="error" class="error hidden">
+                <p id="error-message">Failed to load meditations</p>
+                <button id="retry-btn" class="btn">Retry</button>
+            </div>
+
+            <!-- Meditation List -->
+            <div id="meditation-list" class="meditation-list"></div>
+
+        </main>
+
+        <!-- Floating Mini Player (hidden by default) -->
+        <div id="mini-player" class="mini-player hidden">
+            <div class="mini-player-content">
+                <div class="mini-player-info">
+                    <div class="mini-player-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 18V5l12-2v13"></path>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <circle cx="18" cy="16" r="3"></circle>
+                        </svg>
+                    </div>
+                    <div class="mini-player-text">
+                        <span id="player-title" class="mini-player-title">Select a meditation</span>
+                        <span id="player-time" class="mini-player-time">--:-- / --:--</span>
+                    </div>
+                </div>
+                <div class="mini-player-controls">
+                    <button type="button" id="play-pause-btn" class="mini-play-btn">
+                        <svg id="playIconSVG" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pauseIconSVG" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+                            style="display: none;">
+                            <rect x="6" y="4" width="4" height="16"></rect>
+                            <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                    </button>
+                    <button type="button" id="close-player-btn" class="mini-close-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="mini-player-progress-wrapper">
+                <div class="mini-player-progress">
+                    <div id="progressBar" class="mini-progress-fill"></div>
+                </div>
+                <input type="range" id="progress-bar" min="0" max="100" value="0" class="mini-progress-input">
+            </div>
+            <span id="currentTime" style="display:none;">0:00</span>
+            <span id="totalTime" style="display:none;">0:00</span>
+        </div>
+
+        <nav class="nav-bar">
+            <button class="nav-item nav-active" id="nav-home">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item nav-inactive" id="nav-breathe">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="4"></circle>
+                </svg>
+                <span>Breathe</span>
+            </button>
+            <button class="nav-item nav-inactive" id="nav-sounds">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 10v3m4-7v11m4-14v18m4-14v11m4-7v3"></path>
+                </svg>
+                <span>Sounds</span>
+            </button>
+            <button id="goto-site-btn" class="nav-item nav-inactive">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                <span>Website</span>
+            </button>
+        </nav>
+
+    </div>
+
+    <audio id="audio-element"></audio>
+
+    <script src="config.js"></script>
+    <script src="lib/supabase.min.js"></script>
+    <script src="popup.js"></script>
+</body>
+
+</html>
