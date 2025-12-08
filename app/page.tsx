@@ -23,6 +23,7 @@ export default function Home() {
     "@type": "WebSite",
     name: "Daily Meditation Guide",
     url: "https://www.quick.dailymeditationguide.com",
+    description: "Your complete daily meditation guide for sleep, focus, and relaxation.",
     potentialAction: {
       "@type": "SearchAction",
       target: "https://www.quick.dailymeditationguide.com/search?q={search_term_string}",
@@ -35,6 +36,10 @@ export default function Home() {
         "@type": "ImageObject",
         url: "https://www.quick.dailymeditationguide.com/logo.svg",
       },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": "https://www.quick.dailymeditationguide.com",
     },
   }
 

@@ -14,11 +14,11 @@ export const metadata: Metadata = {
     template: "%s | Daily Meditation Guide",
   },
   description:
-    "Immersive audio landscapes, guided meditations, and sleep stories designed to help you focus, breathe, and restore balance to your day. Daily Meditation Guide.",
+    "Your complete daily meditation guide. Immersive audio landscapes, guided meditations, and sleep stories designed to help you focus, breathe, and restore balance to your day.",
   applicationName: "Daily Meditation Guide",
   authors: [{ name: "Daily Meditation Guide Team" }],
   generator: "v0.app",
-  keywords: ["meditation", "mindfulness", "sleep stories", "focus", "relaxation", "ambient sounds", "guided meditation", "breathing exercises"],
+  keywords: ["daily meditation guide", "meditation", "mindfulness", "sleep stories", "focus", "relaxation", "ambient sounds", "guided meditation", "breathing exercises"],
   referrer: "origin-when-cross-origin",
   creator: "Daily Meditation Guide Team",
   publisher: "Daily Meditation Guide",
