@@ -14,11 +14,11 @@ export function HeroSection() {
       </span>
 
       <h1 className="text-5xl md:text-7xl font-medium tracking-tight text-foreground mb-6 blur-reveal delay-100 text-balance">
-        Guided <span className="text-celadon-dark italic font-serif">Meditation</span> & Sleep Stories
+        Your <span className="text-celadon-dark italic font-serif">Daily Meditation Guide</span> for Sleep & Focus
       </h1>
 
       <p className="text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed mb-10 blur-reveal delay-200 text-pretty">
-        Immersive audio landscapes designed to help you focus, breathe, and restore balance to your day.
+        Discover your personal daily meditation guide. Immersive audio landscapes designed to help you focus, breathe, and restore balance to your day.
       </p>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 blur-reveal delay-300">
