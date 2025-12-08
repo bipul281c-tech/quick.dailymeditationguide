@@ -1,8 +1,6 @@
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
 import { AmbientBackground } from "@/components/ambient-background"
 import { getMeditationById, getAllMeditations, getRelatedMeditations } from "@/lib/meditations"
 import { Spinner } from "@/components/ui/spinner"
@@ -208,15 +206,12 @@ export default async function PlayPage({ params }: PlayPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <AmbientBackground />
-      <Navigation />
 
       <main className="pt-20 md:pt-32 pb-24 px-4 md:px-6 relative max-w-4xl mx-auto min-h-screen flex flex-col">
         <Suspense fallback={<PlayerLoading />}>
           <MeditationPlayClient meditation={meditation} relatedMeditations={relatedMeditations} />
         </Suspense>
       </main>
-
-      <Footer />
     </div>
   )
 }

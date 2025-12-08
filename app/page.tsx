@@ -1,7 +1,5 @@
 import { Suspense } from "react"
-import { Navigation } from "@/components/navigation"
 import { HeroSection } from "@/components/hero-section"
-import { Footer } from "@/components/footer"
 import { AmbientBackground } from "@/components/ambient-background"
 import { MeditationPlayer } from "@/components/meditation-player"
 import { ExtensionPromo } from "@/components/extension-promo"
@@ -47,7 +45,6 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <AmbientBackground />
-      <Navigation />
 
       <main className="pt-32 pb-24 px-6 relative max-w-6xl mx-auto min-h-screen flex flex-col justify-center">
         <HeroSection />
@@ -67,8 +64,6 @@ export default function Home() {
 
       {/* Extension Promotion Section */}
       <ExtensionPromo />
-
-      <Footer />
     </div>
   )
 }

@@ -3,9 +3,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { getMeditationById } from "@/lib/meditations"
-import { Navigation } from "@/components/navigation"
 import { AmbientBackground } from "@/components/ambient-background"
-import { Footer } from "@/components/footer"
 import { StatsHeader } from "@/components/stats-header"
 import { FeaturedTrackCard } from "@/components/featured-track-card"
 import { TrackRankingList } from "@/components/track-ranking-list"
@@ -104,7 +102,6 @@ export default function MostPlayedPage() {
   return (
     <div className="bg-background text-foreground antialiased selection:bg-celadon-light selection:text-primary-foreground overflow-x-hidden relative min-h-screen flex flex-col">
       <AmbientBackground />
-      <Navigation />
 
       <main className="flex-grow pt-32 pb-24 px-6 max-w-6xl mx-auto w-full">
         <StatsHeader />
@@ -132,8 +129,6 @@ export default function MostPlayedPage() {
           </>
         )}
       </main>
-
-      <Footer />
     </div>
   )
 }

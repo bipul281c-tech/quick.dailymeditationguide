@@ -4,6 +4,8 @@ import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from "@/contexts/auth-context"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
+import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -121,7 +123,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
+            <Navigation />
             {children}
+            <Footer />
           </AuthProvider>
           <Toaster />
           <Analytics />

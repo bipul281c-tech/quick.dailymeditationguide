@@ -7,9 +7,7 @@ import { Heart, Loader2, ArrowLeft, Music, Clock, Trash2 } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { createClient } from "@/lib/supabase/client"
 import { getMeditationById } from "@/lib/meditations"
-import { Navigation } from "@/components/navigation"
 import { AmbientBackground } from "@/components/ambient-background"
-import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
@@ -222,7 +220,6 @@ export default function FavoritesPage() {
   return (
     <div className="bg-background text-foreground antialiased selection:bg-celadon-light selection:text-primary-foreground overflow-x-hidden relative min-h-screen">
       <AmbientBackground />
-      <Navigation />
 
       <main className="pt-32 pb-24 px-6 relative max-w-6xl mx-auto min-h-screen">
         {/* Header */}
@@ -262,8 +259,6 @@ export default function FavoritesPage() {
           renderFavorites()
         )}
       </main>
-
-      <Footer />
     </div>
   )
 }
