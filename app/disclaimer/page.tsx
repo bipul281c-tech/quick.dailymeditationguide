@@ -3,8 +3,25 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Disclaimer",
-    description: "Important disclaimers regarding the use of Daily Meditation Guide content and services.",
+    description: "Important disclaimers regarding the use of Daily Meditation Guide content and services. Medical and health-related information notice.",
+    openGraph: {
+        title: "Disclaimer | Daily Meditation Guide",
+        description: "Important disclaimers regarding the use of Daily Meditation Guide content and services.",
+        url: "https://www.quick.dailymeditationguide.com/disclaimer",
+        siteName: "Daily Meditation Guide",
+        locale: "en_US",
+        type: "website",
+    },
+    twitter: {
+        card: "summary",
+        title: "Disclaimer | Daily Meditation Guide",
+        description: "Important disclaimers about our meditation content.",
+    },
+    alternates: {
+        canonical: "https://www.quick.dailymeditationguide.com/disclaimer",
+    },
 }
+
 
 export default function DisclaimerPage() {
     return (

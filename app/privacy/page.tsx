@@ -3,8 +3,25 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Privacy Policy",
-    description: "Learn how Daily Meditation Guide collects, uses, and protects your personal information.",
+    description: "Learn how Daily Meditation Guide collects, uses, and protects your personal information. Your privacy and data security matter to us.",
+    openGraph: {
+        title: "Privacy Policy | Daily Meditation Guide",
+        description: "Learn how Daily Meditation Guide collects, uses, and protects your personal information.",
+        url: "https://www.quick.dailymeditationguide.com/privacy",
+        siteName: "Daily Meditation Guide",
+        locale: "en_US",
+        type: "website",
+    },
+    twitter: {
+        card: "summary",
+        title: "Privacy Policy | Daily Meditation Guide",
+        description: "Your privacy matters. Learn how we protect your data.",
+    },
+    alternates: {
+        canonical: "https://www.quick.dailymeditationguide.com/privacy",
+    },
 }
+
 
 export default function PrivacyPage() {
     return (

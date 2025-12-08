@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Play, Heart, Star, User, Layers } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import type { MeditationWithId } from "@/types/meditation"
@@ -83,10 +84,12 @@ export function LibraryCard({ meditation, onPlay }: LibraryCardProps) {
 
             {/* Media: Large Image */}
             <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-muted">
-                <img
+                <Image
                     src={meditation.thumbnail || "/placeholder.svg"}
-                    alt={meditation.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    alt={`${meditation.title} - Guided Meditation Audio`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
 
                 {/* Overlay Play Button (Appear on Hover) */}

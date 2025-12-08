@@ -4,8 +4,25 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "About Us",
-    description: "Learn about Daily Meditation Guide - your sanctuary for mindfulness, guided meditations, and peaceful sleep stories.",
+    description: "Learn about Daily Meditation Guide - your sanctuary for mindfulness, guided meditations, and peaceful sleep stories. Discover our mission and values.",
+    openGraph: {
+        title: "About Us | Daily Meditation Guide",
+        description: "Learn about Daily Meditation Guide - your sanctuary for mindfulness, guided meditations, and peaceful sleep stories.",
+        url: "https://www.quick.dailymeditationguide.com/about",
+        siteName: "Daily Meditation Guide",
+        locale: "en_US",
+        type: "website",
+    },
+    twitter: {
+        card: "summary",
+        title: "About Us | Daily Meditation Guide",
+        description: "Discover our mission to make mindfulness accessible to everyone.",
+    },
+    alternates: {
+        canonical: "https://www.quick.dailymeditationguide.com/about",
+    },
 }
+
 
 const features = [
     {

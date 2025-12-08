@@ -5,7 +5,6 @@ export const siteConfig = {
         { href: "/library", label: "Library" },
         { href: "/most-played", label: "Most Played" },
         { href: "/most-favorited", label: "Most Favorited" },
-        { href: "#", label: "Journal" },
     ],
     footerNav: [
         { href: "/about", label: "About" },

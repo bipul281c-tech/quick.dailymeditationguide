@@ -3,8 +3,25 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Terms of Service",
-    description: "Read the terms and conditions for using Daily Meditation Guide services.",
+    description: "Read the terms and conditions for using Daily Meditation Guide services. Understand your rights and responsibilities.",
+    openGraph: {
+        title: "Terms of Service | Daily Meditation Guide",
+        description: "Read the terms and conditions for using Daily Meditation Guide services.",
+        url: "https://www.quick.dailymeditationguide.com/terms",
+        siteName: "Daily Meditation Guide",
+        locale: "en_US",
+        type: "website",
+    },
+    twitter: {
+        card: "summary",
+        title: "Terms of Service | Daily Meditation Guide",
+        description: "Terms and conditions for using Daily Meditation Guide.",
+    },
+    alternates: {
+        canonical: "https://www.quick.dailymeditationguide.com/terms",
+    },
 }
+
 
 export default function TermsPage() {
     return (

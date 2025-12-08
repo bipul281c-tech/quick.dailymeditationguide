@@ -29,14 +29,16 @@ export function Footer() {
           ))}
         </div>
 
+        {/* Social links - Add real URLs when available
         <div className="flex gap-4">
-          <a href="#" className="text-muted-foreground hover:text-celadon-dark transition-colors">
+          <a href="https://instagram.com/dailymeditationguide" className="text-muted-foreground hover:text-celadon-dark transition-colors" aria-label="Follow us on Instagram" rel="noopener noreferrer" target="_blank">
             <Instagram className="w-4 h-4" />
           </a>
-          <a href="#" className="text-muted-foreground hover:text-celadon-dark transition-colors">
+          <a href="https://twitter.com/dailymedguide" className="text-muted-foreground hover:text-celadon-dark transition-colors" aria-label="Follow us on Twitter" rel="noopener noreferrer" target="_blank">
             <Twitter className="w-4 h-4" />
           </a>
         </div>
+        */}
       </div>
     </footer>
   )
